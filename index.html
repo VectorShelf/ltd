@@ -1,0 +1,1012 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const SLIDES = [
+  {
+    id: "cover",
+    type: "cover",
+    tag: "تقرير استراتيجي · 2025",
+    title: "استراتيجية التميز\nالإبداعي والتشغيلي",
+    subtitle: "إطار تحويل شامل للفريق الإبداعي نحو منظومة DesignOps عالية الكفاءة",
+    stats: [
+      { n: "7", l: "نقاط احتكاك محددة" },
+      { n: "3", l: "منهجيات عالمية" },
+      { n: "90+", l: "يوماً للتحول الكامل" },
+      { n: "B2G/B2B", l: "القطاعات المستهدفة" },
+    ],
+  },
+  {
+    id: "exec",
+    type: "exec",
+    tag: "01 · الملخص التنفيذي",
+    title: "الحكم الاستراتيجي",
+    lead: "المشكلة الجوهرية ليست نقص الكفاءات — بل غياب النظام الذي يُشغّلها.",
+    verdict:
+      "كل تأخير في تسليم، وكل مراجعة متكررة، وكل فرصة ضائعة هي تكلفة مباشرة لغياب DesignOps. الاستثمار في المنهجية يعني تعظيم العائد على كل موهبة موجودة بالفعل — دون إضافة موارد.",
+    blocks: [
+      {
+        icon: "👥",
+        title: "الرأس المال البشري",
+        desc: "فريق إبداعي بمهارات عالية يشمل تصميم ثلاثي الأبعاد — محاصر في بنية تشغيلية تستنزف طاقته",
+      },
+      {
+        icon: "💻",
+        title: "البنية التقنية",
+        desc: "عتاد ممتاز وبيئة محفزة 85% — يفتقر لمنظومة رقمية لإدارة العمل والأرشفة",
+      },
+      {
+        icon: "🏛",
+        title: "السوق المستهدف",
+        desc: "B2G/B2B في قطاع الفعاليات — يكافئ الاحترافية الظاهرة في العروض قبل أي شيء آخر",
+      },
+      {
+        icon: "📈",
+        title: "إرادة التحول",
+        desc: "رغبة الإدارة العليا في التوسع — رافعة تنفيذية حاسمة جاهزة للتفعيل",
+      },
+    ],
+  },
+  {
+    id: "diagnosis",
+    type: "maturity",
+    tag: "02 · تشخيص الوضع الراهن",
+    title: "مستوى النضج التشغيلي",
+    lead: "قراءة موضوعية للوضع الحالي عبر ثلاثة أبعاد تشغيلية رئيسية",
+    level: "المستوى 1 من 5",
+    levelLabel: "تفاعلي غير منظم",
+    metrics: [
+      { label: "الطلبات الشفهية بلا توثيق", value: "~90%", status: "bad" },
+      { label: "نظام إدارة المهام", value: "معدوم", status: "bad" },
+      { label: "وضوح صلاحية الاعتماد", value: "غائب", status: "bad" },
+      { label: "الامتثال البيئي", value: "85%", status: "warn" },
+    ],
+    pillars: [
+      {
+        icon: "👤",
+        color: "#7C3AED",
+        title: "محور الأفراد",
+        desc: "مشرف واحد يؤدي دور المدير والمنفذ. أدوار غير معرّفة وحواجز ثقافية تعيق التواصل الفعّال.",
+      },
+      {
+        icon: "⚙️",
+        color: "#B45309",
+        title: "محور العمليات",
+        desc: "لا منهجية موحدة. كل مشروع يبدأ من الصفر تنظيمياً مع احتمالية عالية للتعديلات المتكررة.",
+      },
+      {
+        icon: "🔧",
+        color: "#1D4ED8",
+        title: "محور الأدوات",
+        desc: "الفجوة ليست في العتاد الجسدي بل في منظومة العمل الرقمية: لا مهام، لا أرشفة، لا نظام تصميم.",
+      },
+    ],
+  },
+  {
+    id: "rootcause",
+    type: "rootcause",
+    tag: "03 · تحليل الأسباب الجذرية",
+    title: "ما وراء الأعراض",
+    lead: "وراء كل تأخير وكل تعديل متكرر — سبب جذري أعمق يجب معالجته أولاً",
+    causes: [
+      {
+        type: "هيكلي",
+        color: "#DC2626",
+        title: "غياب البنية التنظيمية للقسم الإبداعي",
+        effect:
+          "المشرف عاجز عن التخطيط الاستراتيجي لانشغاله بالتنفيذ اليومي. كل قسم خارجي يتعامل مع الفريق كأداة تنفيذ فورية.",
+      },
+      {
+        type: "عملياتي",
+        color: "#B45309",
+        title: "عشوائية قناة الإدخال: الموجز الشفهي",
+        effect:
+          "التعديلات المتكررة ليست خللاً في الأداء الإبداعي — بل هي نتيجة حتمية لغياب تعريف واضح للمطلوب منذ البداية.",
+      },
+      {
+        type: "تقني",
+        color: "#1D4ED8",
+        title: "غياب منظومة إدارة المعرفة والأصول",
+        effect:
+          "الفريق يُعيد اختراع العجلة في كل مشروع. الأعمال السابقة غير موثّقة ومنع بناء مكتبة أصول تُسرّع العمل.",
+      },
+      {
+        type: "سلطوي",
+        color: "#7C3AED",
+        title: "تعدد مصادر التقييم وغياب الاعتماد",
+        effect:
+          "حلقات مراجعة لا نهاية لها. كل طرف يُدخل تعديلاته دون رؤية متكاملة، مما يُفقد المخرجات تماسكها.",
+      },
+      {
+        type: "استراتيجي",
+        color: "#065F46",
+        title: "ضعف تموضع الشركة في العروض الفنية",
+        effect:
+          "المنافسون يفوزون ليس بكفاءة تنفيذية أعلى، بل بقدرة أكبر على إقناع صانع القرار بصرياً وسردياً.",
+      },
+    ],
+  },
+  {
+    id: "swot",
+    type: "swot",
+    tag: "04 · تحليل SWOT",
+    title: "قراءة واقعية غير مجاملة",
+    lead: "الأساس الذي تُبنى عليه قرارات التخصيص الاستراتيجي",
+    quadrants: [
+      {
+        label: "نقاط القوة",
+        en: "Strengths",
+        color: "#065F46",
+        bg: "rgba(6,95,70,0.06)",
+        items: [
+          "كفاءات بشرية عالية وسرعة إنجاز في 3D والمهام المعقدة",
+          "بنية تحتية تقنية ممتازة وعتاد داعم للإنتاج",
+          "بيئة عمل مادية محفزة بامتثال 85%",
+          "إرادة الإدارة العليا الصريحة في التوسع",
+          "تنوع التخصصات يتيح حلولاً متكاملة",
+        ],
+      },
+      {
+        label: "نقاط الضعف",
+        en: "Weaknesses",
+        color: "#DC2626",
+        bg: "rgba(220,38,38,0.05)",
+        items: [
+          "تداخل الأدوار وغياب خطوط الإبلاغ الواضحة",
+          "الاعتماد الكلي على التوجيهات الشفهية",
+          "لا أدوات إدارة مهام ولا أرشفة موحدة",
+          "غياب آلية اعتماد واضحة ومحددة الصلاحيات",
+          "ضعف العروض الفنية: غياب السرد الاستراتيجي",
+        ],
+      },
+      {
+        label: "الفرص",
+        en: "Opportunities",
+        color: "#1D4ED8",
+        bg: "rgba(29,78,216,0.05)",
+        items: [
+          "نظام إدارة مهام سيُحدث قفزة فورية في الإنتاجية",
+          "توحيد الموجز يوفر ساعات من التعديلات المتكررة",
+          "تحسين العروض يرفع مباشرة معدل الفوز بالمناقصات",
+          "Agile يخلق شفافية تبني الثقة مع الإدارة",
+          "نمو قطاع الفعاليات الحكومي في المنطقة",
+        ],
+      },
+      {
+        label: "التهديدات",
+        en: "Threats",
+        color: "#B45309",
+        bg: "rgba(180,83,9,0.05)",
+        items: [
+          "الاحتراق الوظيفي نتيجة الضغط المزمن والعمل العشوائي",
+          "فقدان الفرص التجارية بسبب تأخر التسليمات",
+          "هدر طاقة المبدعين في مهام إدارية وتنسيقية",
+          "فقدان المواهب لغياب مسار وظيفي واضح",
+          "تراجع جودة المخرجات على المدى البعيد",
+        ],
+      },
+    ],
+  },
+  {
+    id: "friction",
+    type: "friction",
+    tag: "05 · خريطة نقاط الاحتكاك",
+    title: "سبع نقاط ألم تشغيلية",
+    lead: "مُحددة ومُقيّمة حسب الأثر المباشر على المخرجات والعلاقات التجارية",
+    points: [
+      {
+        n: "01",
+        impact: "عالي جداً",
+        impactColor: "#DC2626",
+        title: "غياب الهيكلة التنظيمية",
+        desc: "مشرف القسم يتلقى طلبات من أقسام متعددة دون قناة موحدة أو نظام أولويات — تضارب الطلبات وانهيار التخطيط اليومي.",
+      },
+      {
+        n: "02",
+        impact: "عالي جداً",
+        impactColor: "#DC2626",
+        title: "عشوائية الموجز الإبداعي",
+        desc: "الاعتماد على التوجيهات الشفهية يُنتج فجوة بين ما يُطلب وما يُفهم. التعديلات المتكررة أعراض لغياب تعريف واضح.",
+      },
+      {
+        n: "03",
+        impact: "عالي",
+        impactColor: "#DC2626",
+        title: "ضعف البنية التحتية الرقمية",
+        desc: "غياب أدوات إدارة المهام وأنظمة الأرشفة الموحدة يعني ضياع الأعمال وعجز كامل عن قياس الإنتاجية.",
+      },
+      {
+        n: "04",
+        impact: "عالي",
+        impactColor: "#DC2626",
+        title: "تعدد مصادر التقييم",
+        desc: "كل شخص يرى نفسه مُخوَّلاً بالمراجعة. حلقات تعديل لا نهاية لها تنتهي بمخرج لا يُقنع أحداً فعلياً.",
+      },
+      {
+        n: "05",
+        impact: "متوسط-عالي",
+        impactColor: "#B45309",
+        title: "غياب منهجية موحدة لسير العمل",
+        desc: "لا Agile، لا Waterfall. كل مشروع يبدأ من الصفر تنظيمياً — الأعضاء الجدد لا يجدون نظاماً يندمجون معه.",
+      },
+      {
+        n: "06",
+        impact: "متوسط-عالي",
+        impactColor: "#B45309",
+        title: "غياب تتبع الوقت والجهد",
+        desc: "لا نظام لتقدير وقت المهام. النتيجة: مواقف حرجة كتسليم العروض الفنية بعد الموعد النهائي.",
+      },
+      {
+        n: "07",
+        impact: "عالي جداً · تجاري",
+        impactColor: "#DC2626",
+        title: "ضعف العروض الفنية للعملاء",
+        desc: "تعتمد على 3D دون سياق استراتيجي. صانع القرار الحكومي يبحث عن إثبات جدارة ومنهجية — ليس جمالاً بصرياً فقط.",
+      },
+    ],
+  },
+  {
+    id: "framework",
+    type: "framework",
+    tag: "06 · إطار DesignOps",
+    title: "نموذج التحول المتكامل",
+    lead: "ثلاثة منهجيات عالمية مدمجة في نظام واحد مُصمَّم لواقع الفريق الراهن",
+    pillars: [
+      {
+        color: "#7C3AED",
+        bg: "rgba(124,58,237,0.07)",
+        icon: "👥",
+        title: "الأفراد · People",
+        sub: "من أفراد مبعثرين إلى فريق بأدوار محددة",
+        now: ["مشرف واحد يدير وينفذ", "أدوار غير معرّفة", "حواجز ثقافية ولغوية"],
+        target: ["مصفوفة RACI لكل دور", "قادة مشاريع داخليون", "ثقافة تواصل واضحة"],
+      },
+      {
+        color: "#B45309",
+        bg: "rgba(180,83,9,0.07)",
+        icon: "⚙️",
+        title: "العمليات · Process",
+        sub: "من الفوضى التفاعلية إلى نظام رشيق قابل للقياس",
+        now: ["لا منهجية موحدة", "موجز شفهي غير موثّق", "غياب أرشفة وتتبع الوقت"],
+        target: ["Agile Creative Workflow", "موجز إبداعي رقمي إلزامي", "نظام أرشفة موحد"],
+      },
+      {
+        color: "#1D4ED8",
+        bg: "rgba(29,78,216,0.07)",
+        icon: "🔧",
+        title: "الأدوات · Tools",
+        sub: "من العتاد المُهدَر إلى منظومة رقمية مُضاعِفة للكفاءة",
+        now: ["لا أداة لإدارة المهام", "لا مكتبة أصول مشتركة", "لا نظام تصميم موحد"],
+        target: ["ClickUp / Asana مُطبَّق", "Digital Asset Management", "Design System موحد"],
+      },
+    ],
+    methodologies: [
+      { name: "DesignOps Maturity Model", desc: "تطوير قدرات الفريق عبر الأفراد والعمليات والأدوات" },
+      { name: "Double Diamond", desc: "اكتشاف ← تعريف ← تطوير ← تسليم" },
+      { name: "Agile Creative Workflow", desc: "دورات قصيرة · شفافية · تحسين مستمر" },
+    ],
+  },
+  {
+    id: "opportunities",
+    type: "opportunities",
+    tag: "07 · الفرص الاستراتيجية",
+    title: "أربع فرص عالية الأثر",
+    lead: "قابلة للتنفيذ الفوري — مرتبة حسب السرعة والأثر التجاري",
+    opps: [
+      {
+        n: "01",
+        color: "#B45309",
+        title: "تحويل العروض الفنية إلى أداة تسويقية",
+        desc: "العرض الفني الاحترافي في B2G هو الفارق بين الفوز والخسارة. الشركة تمتلك القدرة التنفيذية — تحتاج فقط لإظهارها بصرياً وسردياً.",
+        impact: "أثر تجاري مباشر على الإيرادات",
+      },
+      {
+        n: "02",
+        color: "#1D4ED8",
+        title: "الموجز الإبداعي الرقمي كأول خطوة تحويلية",
+        desc: "نموذج إلزامي موحد سيُقلص التعديلات 40-60%. هذا وحده يُحرر ساعات أسبوعية لإعادة توجيهها للعمل الإبداعي الحقيقي.",
+        impact: "تأثير سريع على الكفاءة الداخلية",
+      },
+      {
+        n: "03",
+        color: "#7C3AED",
+        title: "أداة المهام كرافعة شفافية مع الإدارة",
+        desc: "اعتماد ClickUp/Asana يُنشئ سجلاً شفافاً يُثبت حجم العمل الفعلي — يفتح نقاشاً موضوعياً حول الأولويات والموارد.",
+        impact: "تأثير على ثقافة المساءلة",
+      },
+      {
+        n: "04",
+        color: "#065F46",
+        title: "مكتبة الأصول الرقمية كعامل تسريع",
+        desc: "أرشفة الأعمال وتوحيد الأصول المتكررة يُقلص وقت كل مشروع جديد ويُؤسس هوية بصرية تُقوي الحضور في السوق.",
+        impact: "تأثير على جودة المخرجات وسرعتها",
+      },
+    ],
+  },
+  {
+    id: "roadmap",
+    type: "roadmap",
+    tag: "08 · خطة التنفيذ",
+    title: "ثلاث مراحل تحويلية",
+    lead: "مُصممة للتراكم التدريجي دون إرهاق المنظمة — كل مرحلة تبني على سابقتها",
+    phases: [
+      {
+        n: "01",
+        color: "#1D4ED8",
+        bg: "rgba(29,78,216,0.06)",
+        label: "التأسيس والتمكين",
+        time: "أول 30 يوماً",
+        items: [
+          "وضع مصفوفة RACI لكل دور في الفريق والأقسام المرتبطة",
+          "تصميم واعتماد الموجز الإبداعي الرقمي الإلزامي",
+          "اختيار وتطبيق أداة إدارة المهام مع تدريب الفريق",
+          "قرار رسمي: إيقاف الطلبات الشفهية نهائياً",
+        ],
+      },
+      {
+        n: "02",
+        color: "#B45309",
+        bg: "rgba(180,83,9,0.06)",
+        label: "توحيد المعايير والتحسين",
+        time: "30 – 90 يوماً",
+        items: [
+          "إطلاق أول دورة عمل رشيقة (Sprint) بمدة أسبوعين",
+          "إنشاء نظام أرشفة وتسمية موحد للملفات",
+          "تفعيل مصفوفة الاعتماد وتحديد أصحاب الصلاحية",
+          "ورشة Double Diamond لتدريب الفريق على الاكتشاف والتعريف",
+          "إعادة هيكلة نموذج العرض الفني الاستراتيجي",
+        ],
+      },
+      {
+        n: "03",
+        color: "#065F46",
+        bg: "rgba(6,95,70,0.06)",
+        label: "القياس والتميز",
+        time: "90 يوماً وما بعدها",
+        items: [
+          "تفعيل لوحة مؤشرات الأداء الداخلية",
+          "بناء مكتبة الأصول الرقمية المشتركة",
+          "تطبيق سياسة العمل الهجين المرن",
+          "مراجعة تنظيمية دورية مستندة للبيانات لا الانطباعات",
+        ],
+      },
+    ],
+  },
+  {
+    id: "kpis",
+    type: "kpis",
+    tag: "09 · مؤشرات الأداء",
+    title: "منظومة القياس والمساءلة",
+    lead: "مؤشرات قابلة للقياس الفعلي — لإثبات أثر التحول وتوجيه القرارات اليومية",
+    kpis: [
+      { domain: "الكفاءة التشغيلية", name: "معدل التعديلات / مشروع", target: "< 2 جولة", time: "قياس شهري", color: "#7C3AED" },
+      { domain: "الالتزام الزمني", name: "نسبة التسليم في الموعد", target: "90%+ خلال 90 يوماً", time: "قياس أسبوعي", color: "#1D4ED8" },
+      { domain: "جودة الإدخال", name: "طلبات الموجز الرسمي", target: "100% خلال 30 يوماً", time: "قياس أسبوعي", color: "#065F46" },
+      { domain: "رضا الفريق", name: "وضوح الأدوار (استبيان)", target: "4/5 خلال 60 يوماً", time: "قياس شهري", color: "#B45309" },
+      { domain: "الأثر التجاري", name: "معدل الفوز بالمناقصات", target: "نمو 25%+ سنوياً", time: "قياس ربعي", color: "#DC2626" },
+      { domain: "كفاءة الموارد", name: "نسبة الوقت الإبداعي", target: "70% إبداعي / 30% إداري", time: "قياس شهري", color: "#7C3AED" },
+    ],
+  },
+  {
+    id: "proposals",
+    type: "proposals",
+    tag: "10 · العروض الفنية الفائزة",
+    title: "ست خطوات للإقناع",
+    lead: "تحويل العروض من وثائق معلوماتية إلى أدوات إقناع استراتيجية تُقنع صانع القرار قبل أن يُكمل القراءة",
+    steps: [
+      {
+        n: "١",
+        title: "الخطاف السردي والملخص التنفيذي",
+        tags: ["Executive Summary", "Narrative Hook", "Value Proposition"],
+        desc: "الصفحة الأولى تُجيب: لماذا هذه الشركة تحديداً؟ بيان الفرصة + الحل الفريد + القيمة المضافة في صفحة واحدة.",
+      },
+      {
+        n: "٢",
+        title: "المنهجية الإبداعية وفلسفة التنفيذ",
+        tags: ["Creative Methodology", "Infographics", "Project Phases"],
+        desc: "الجهات الحكومية لا تشتري تصاميم جميلة — بل تشتري منهجية موثوقة. شرح Double Diamond وAgile يُحوّل الفريق إلى شريك استراتيجي.",
+      },
+      {
+        n: "٣",
+        title: "السرد البصري لمشاريع سابقة",
+        tags: ["Case Studies", "Visual Storytelling", "Testimonials"],
+        desc: "3-5 دراسات حالة: التحدي ← الحل ← النتائج بالأرقام. الشهادات سلاح إثبات يستحيل دحضه.",
+      },
+      {
+        n: "٤",
+        title: "خبرات الفريق والملفات المهنية",
+        tags: ["Team Profiles", "Relevant Experience", "Org Chart"],
+        desc: "الجهات الحكومية تبحث عن 'من سينفّذ'. ملفات موجزة مُركّزة على الخبرة ذات الصلة بالمشروع المحدد.",
+      },
+      {
+        n: "٥",
+        title: "الجدول الزمني ومعايير الجودة",
+        tags: ["Gantt Chart", "PMBOK", "Resource Planning"],
+        desc: "مخطط Gantt يُظهر التزاماً بالتخطيط الدقيق. الجهات الحكومية تُقيّم القدرة على الالتزام الزمني كمعيار جوهري.",
+      },
+      {
+        n: "٦",
+        title: "الامتثال والشهادات بأسلوب إبداعي",
+        tags: ["Compliance", "Certifications", "Creative Presentation"],
+        desc: "تحويل 'الورق الرسمي' إلى لحظة بصرية تُعزز الثقة. المتطلب القانوني يصبح ميزة تسويقية.",
+      },
+    ],
+  },
+  {
+    id: "vision",
+    type: "vision",
+    tag: "11 · الرؤية المستقبلية",
+    title: "من فريق إلى منظومة",
+    quote:
+      "الهدف ليس فريقاً يعمل بجدية أكبر — بل فريق يعمل بنظام أذكى. الموهبة وحدها لا تبني سمعة مؤسسية؛ المنهجية هي التي تُحوّل الموهبة إلى ميزة تنافسية مستدامة.",
+    evolution: [
+      { n: 1, color: "#DC2626", bg: "rgba(220,38,38,0.08)", title: "الفريق التفاعلي · الآن", desc: "ينفّذ ما يُطلب متى يُطلب — بلا نظام ولا توقع" },
+      { n: 2, color: "#B45309", bg: "rgba(180,83,9,0.08)", title: "الفريق المنظّم · 30-60 يوماً", desc: "أدوار محددة، أدوات فاعلة، عمليات موثّقة" },
+      { n: 3, color: "#1D4ED8", bg: "rgba(29,78,216,0.08)", title: "الفريق الاستراتيجي · 90-180 يوماً", desc: "يُشارك في القرار، يُقدّم مقترحات بالبيانات" },
+      { n: 4, color: "#065F46", bg: "rgba(6,95,70,0.08)", title: "الفريق المؤسسي · سنة", desc: "مرجع داخلي للتميز وأداة تنافسية في السوق" },
+    ],
+    outcomes: [
+      { icon: "🏆", title: "الأثر التجاري", desc: "ارتفاع معدل الفوز بالمناقصات وتحسين هامش الربحية عبر تقليل هدر الوقت." },
+      { icon: "❤️", title: "الأثر الإنساني", desc: "تراجع الاحتراق الوظيفي، مسار وظيفي واضح، ثقافة تُكرّس الاحترافية والنمو." },
+    ],
+    finalVerdict:
+      "هذا التحول لا يتطلب ميزانيات إضافية — يتطلب قراراً. قراراً بأن طريقة إدارة العمل الإبداعي لها قيمة استراتيجية مساوية لجودة مخرجاته.",
+  },
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const useKeyboard = (onPrev, onNext) => {
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") onNext();
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") onPrev();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onPrev, onNext]);
+};
+
+// ─── SLIDE COMPONENTS ────────────────────────────────────────────────────────
+
+function CoverSlide({ slide }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative" }}>
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} style={{
+            position: "absolute",
+            border: "1px solid rgba(201,168,76,0.08)",
+            borderRadius: "50%",
+            width: `${(i + 1) * 18}%`,
+            height: `${(i + 1) * 18}%`,
+            top: "50%", left: "50%",
+            transform: "translate(-50%,-50%)",
+          }} />
+        ))}
+      </div>
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.2em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 20, fontWeight: 600 }}>{slide.tag}</div>
+        <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.8rem)", fontWeight: 800, lineHeight: 1.15, color: "#1A1A2E", marginBottom: 24, whiteSpace: "pre-line" }}>{slide.title}</h1>
+        <div style={{ width: 64, height: 3, background: "#C9A84C", marginBottom: 24 }} />
+        <p style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)", color: "#4A4A6A", maxWidth: 560, lineHeight: 1.8 }}>{slide.subtitle}</p>
+        <div style={{ display: "flex", gap: 32, marginTop: 48, flexWrap: "wrap" }}>
+          {slide.stats.map((s, i) => (
+            <div key={i} style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, color: "#1A1A2E" }}>{s.n}</span>
+              <span style={{ fontSize: 11, color: "#8A8AA0", marginTop: 2 }}>{s.l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExecSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", lineHeight: 1.2, marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: "clamp(1rem, 1.8vw, 1.2rem)", fontWeight: 600, color: "#4A4A6A", fontStyle: "italic", marginTop: 8 }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))", gap: 12 }}>
+        {slide.blocks.map((b, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.2rem 1.4rem" }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>{b.icon}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 6 }}>{b.title}</div>
+            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7 }}>{b.desc}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: "#1A1A2E", borderRadius: 12, padding: "1.4rem 1.8rem" }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.15em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>الحكم الاستراتيجي</div>
+        <p style={{ fontSize: "clamp(0.85rem, 1.4vw, 0.95rem)", color: "rgba(240,237,228,0.88)", lineHeight: 1.9 }}>{slide.verdict}</p>
+      </div>
+    </div>
+  );
+}
+
+function MaturitySlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 28 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 6 }}>{slide.title}</h2>
+        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+        <div style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 10, padding: "1rem 1.5rem" }}>
+          <div style={{ fontSize: 12, color: "#DC2626", fontWeight: 700, marginBottom: 2 }}>مستوى النضج الحالي</div>
+          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#1A1A2E" }}>{slide.level}</div>
+          <div style={{ fontSize: 12, color: "#DC2626" }}>{slide.levelLabel}</div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          {[1,2,3,4,5].map(n => (
+            <div key={n} style={{ width: 40, height: 8, borderRadius: 4, background: n === 1 ? "#DC2626" : "rgba(201,168,76,0.2)" }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", gap: 10 }}>
+        {slide.metrics.map((m, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 10, padding: "1rem 1.2rem" }}>
+            <div style={{ fontSize: 11, color: "#8A8AA0", marginBottom: 4 }}>{m.label}</div>
+            <div style={{ fontSize: "1.2rem", fontWeight: 800, color: m.status === "bad" ? "#DC2626" : "#B45309" }}>{m.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))", gap: 12 }}>
+        {slide.pillars.map((p, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.1rem 1.3rem", borderRight: `3px solid ${p.color}` }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: p.color, textTransform: "uppercase", marginBottom: 6 }}>{p.title}</div>
+            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7 }}>{p.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RootCauseSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 6 }}>{slide.title}</h2>
+        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {slide.causes.map((c, i) => (
+          <div key={i} style={{ display: "flex", gap: 16, background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem", borderRight: `3px solid ${c.color}` }}>
+            <div style={{ minWidth: 72 }}>
+              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: c.color, padding: "2px 8px", background: `${c.color}15`, borderRadius: 20, display: "inline-block" }}>{c.type}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{c.title}</div>
+              <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.65 }}>{c.effect}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SwotSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, flex: 1 }}>
+        {slide.quadrants.map((q, i) => (
+          <div key={i} style={{ background: q.bg, border: `0.5px solid ${q.color}30`, borderRadius: 12, padding: "1.1rem 1.3rem", borderTop: `3px solid ${q.color}` }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: q.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{q.label}</span>
+              <span style={{ fontSize: 10, color: "#8A8AA0" }}>{q.en}</span>
+            </div>
+            {q.items.map((item, j) => (
+              <div key={j} style={{ display: "flex", gap: 8, padding: "4px 0", borderBottom: "0.5px solid rgba(0,0,0,0.05)", fontSize: 12, color: "#4A4A6A", lineHeight: 1.5 }}>
+                <span style={{ color: q.color, fontWeight: 700, flexShrink: 0 }}>—</span>
+                {item}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FrictionSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 20 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))", gap: 8 }}>
+        {slide.points.map((p, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem", borderRight: `3px solid ${p.impactColor}`, display: "flex", gap: 12 }}>
+            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "rgba(201,168,76,0.4)", minWidth: 32, lineHeight: 1 }}>{p.n}</div>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{p.title}</div>
+              <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.6, marginBottom: 4 }}>{p.desc}</div>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", background: `${p.impactColor}15`, color: p.impactColor, borderRadius: 20, letterSpacing: "0.05em" }}>{p.impact}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FrameworkSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {slide.pillars.map((p, i) => (
+          <div key={i} style={{ background: p.bg, border: `0.5px solid ${p.color}25`, borderRadius: 12, padding: "1rem 1.4rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+              <span style={{ fontSize: 18 }}>{p.icon}</span>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: p.color }}>{p.title}</div>
+                <div style={{ fontSize: 11, color: "#8A8AA0" }}>{p.sub}</div>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", color: "#DC2626", textTransform: "uppercase", marginBottom: 4 }}>الوضع الراهن</div>
+                {p.now.map((n, j) => <div key={j} style={{ fontSize: 11, color: "#DC2626", padding: "2px 0", opacity: 0.8 }}>• {n}</div>)}
+              </div>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", color: "#065F46", textTransform: "uppercase", marginBottom: 4 }}>الهدف الاستراتيجي</div>
+                {p.target.map((t, j) => <div key={j} style={{ fontSize: 11, color: "#065F46", padding: "2px 0", opacity: 0.9 }}>✓ {t}</div>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {slide.methodologies.map((m, i) => (
+          <div key={i} style={{ background: "rgba(201,168,76,0.1)", border: "0.5px solid rgba(201,168,76,0.35)", borderRadius: 8, padding: "0.5rem 0.9rem", flex: 1, minWidth: 160 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#8B6914", marginBottom: 2 }}>{m.name}</div>
+            <div style={{ fontSize: 10, color: "#4A4A6A" }}>{m.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OpportunitiesSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px,1fr))", gap: 12 }}>
+        {slide.opps.map((o, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.4rem", borderTop: `3px solid ${o.color}` }}>
+            <div style={{ fontSize: "2rem", fontWeight: 800, color: "rgba(201,168,76,0.3)", lineHeight: 1, marginBottom: 8 }}>{o.n}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 6 }}>{o.title}</div>
+            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7, marginBottom: 8 }}>{o.desc}</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#065F46" }}>↑ {o.impact}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RoadmapSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {slide.phases.map((ph, i) => (
+          <div key={i} style={{ background: ph.bg, border: `0.5px solid ${ph.color}25`, borderRadius: 12, padding: "1.1rem 1.4rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+              <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 10px", background: `${ph.color}18`, color: ph.color, borderRadius: 20 }}>المرحلة {ph.n}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E" }}>{ph.label}</span>
+              <span style={{ fontSize: 11, color: "#8A8AA0", marginRight: "auto" }}>{ph.time}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px,1fr))", gap: 4 }}>
+              {ph.items.map((item, j) => (
+                <div key={j} style={{ display: "flex", gap: 8, fontSize: 12, color: "#4A4A6A", lineHeight: 1.6 }}>
+                  <span style={{ color: ph.color, fontWeight: 700, flexShrink: 0 }}>→</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function KpisSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))", gap: 10 }}>
+        {slide.kpis.map((k, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.2rem 1.4rem", borderTop: `3px solid ${k.color}` }}>
+            <div style={{ fontSize: 10, color: "#8A8AA0", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{k.domain}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 8 }}>{k.name}</div>
+            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: k.color, marginBottom: 4 }}>{k.target}</div>
+            <div style={{ fontSize: 10, color: "#8A8AA0" }}>{k.time}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProposalsSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 20 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))", gap: 10 }}>
+        {slide.steps.map((s, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem" }}>
+            <div style={{ display: "flex", gap: 10, marginBottom: 6 }}>
+              <div style={{ width: 32, height: 32, background: "rgba(201,168,76,0.12)", border: "0.5px solid rgba(201,168,76,0.4)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "#8B6914", flexShrink: 0 }}>{s.n}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", lineHeight: 1.4, paddingTop: 2 }}>{s.title}</div>
+            </div>
+            <p style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.65, marginBottom: 8 }}>{s.desc}</p>
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              {s.tags.map((t, j) => (
+                <span key={j} style={{ fontSize: 9, padding: "2px 7px", background: "rgba(201,168,76,0.1)", border: "0.5px solid rgba(201,168,76,0.4)", borderRadius: 20, color: "#8B6914", fontWeight: 600 }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VisionSlide({ slide }) {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
+      </div>
+      <div style={{ background: "#1A1A2E", borderRadius: 12, padding: "1.8rem 2rem" }}>
+        <p style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", color: "rgba(240,237,228,0.88)", lineHeight: 1.9, fontStyle: "italic" }}>"{slide.quote}"</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))", gap: 8 }}>
+        {slide.evolution.map((e, i) => (
+          <div key={i} style={{ background: e.bg, border: `0.5px solid ${e.color}25`, borderRadius: 10, padding: "1rem 1.2rem" }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${e.color}15`, border: `1px solid ${e.color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: e.color, marginBottom: 8 }}>{e.n}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{e.title}</div>
+            <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.6 }}>{e.desc}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {slide.outcomes.map((o, i) => (
+          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 10, padding: "1rem 1.2rem" }}>
+            <div style={{ fontSize: 20, marginBottom: 6 }}>{o.icon}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 4 }}>{o.title}</div>
+            <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.65 }}>{o.desc}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.35)", borderRadius: 10, padding: "1rem 1.4rem" }}>
+        <p style={{ fontSize: 13, color: "#8B6914", lineHeight: 1.8, fontWeight: 500 }}>{slide.finalVerdict}</p>
+      </div>
+    </div>
+  );
+}
+
+const SLIDE_RENDERERS = {
+  cover: CoverSlide,
+  exec: ExecSlide,
+  maturity: MaturitySlide,
+  rootcause: RootCauseSlide,
+  swot: SwotSlide,
+  friction: FrictionSlide,
+  framework: FrameworkSlide,
+  opportunities: OpportunitiesSlide,
+  roadmap: RoadmapSlide,
+  kpis: KpisSlide,
+  proposals: ProposalsSlide,
+  vision: VisionSlide,
+};
+
+// ─── OVERVIEW MAP ─────────────────────────────────────────────────────────────
+function OverviewMap({ current, onSelect, onClose }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(10,10,20,0.92)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }} onClick={onClose} dir="rtl">
+      <div style={{ background: "#F8F6F0", borderRadius: 16, padding: 32, maxWidth: 900, width: "100%", maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: "#1A1A2E" }}>خريطة العرض التقديمي</h3>
+          <button onClick={onClose} style={{ background: "none", border: "0.5px solid rgba(0,0,0,0.2)", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 12, color: "#4A4A6A" }}>إغلاق</button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 8 }}>
+          {SLIDES.map((s, i) => (
+            <button key={s.id} onClick={() => { onSelect(i); onClose(); }} style={{
+              background: i === current ? "#1A1A2E" : "#fff",
+              border: `0.5px solid ${i === current ? "#1A1A2E" : "rgba(201,168,76,0.3)"}`,
+              borderRadius: 10, padding: "0.9rem 1rem", cursor: "pointer", textAlign: "right",
+              transition: "all 0.15s"
+            }}>
+              <div style={{ fontSize: 10, color: i === current ? "#C9A84C" : "#8A8AA0", marginBottom: 4 }}>شريحة {i + 1}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: i === current ? "#F8F6F0" : "#1A1A2E", lineHeight: 1.4 }}>{s.tag?.split("·")[1]?.trim() || s.tag}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+function Sidebar({ current, onSelect, visible }) {
+  return (
+    <div style={{
+      position: "fixed", top: 0, right: 0, height: "100vh", width: 220,
+      background: "#1A1A2E", borderLeft: "0.5px solid rgba(201,168,76,0.15)",
+      zIndex: 50, transform: visible ? "translateX(0)" : "translateX(100%)",
+      transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
+      display: "flex", flexDirection: "column", padding: "24px 0", overflowY: "auto"
+    }} dir="rtl">
+      <div style={{ padding: "0 16px 16px", borderBottom: "0.5px solid rgba(201,168,76,0.15)", marginBottom: 8 }}>
+        <div style={{ fontSize: 10, letterSpacing: "0.15em", color: "#C9A84C", textTransform: "uppercase", fontWeight: 600 }}>قائمة الشرائح</div>
+      </div>
+      {SLIDES.map((s, i) => (
+        <button key={s.id} onClick={() => onSelect(i)} style={{
+          background: i === current ? "rgba(201,168,76,0.12)" : "none",
+          border: "none", borderRight: `2px solid ${i === current ? "#C9A84C" : "transparent"}`,
+          padding: "10px 16px", cursor: "pointer", textAlign: "right", width: "100%",
+          transition: "all 0.15s"
+        }}>
+          <div style={{ fontSize: 9, color: i === current ? "#C9A84C" : "#4A4A6A", marginBottom: 2 }}>{String(i + 1).padStart(2, "0")}</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: i === current ? "#F8F6F0" : "#8A8AA0", lineHeight: 1.3 }}>{s.tag?.split("·")[1]?.trim() || s.tag}</div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─── MAIN APP ────────────────────────────────────────────────────────────────
+export default function PitchDeck() {
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState(-1);
+  const [direction, setDirection] = useState(1);
+  const [animating, setAnimating] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const total = SLIDES.length;
+
+  const goTo = useCallback((idx) => {
+    if (animating || idx === current || idx < 0 || idx >= total) return;
+    setDirection(idx > current ? 1 : -1);
+    setPrev(current);
+    setAnimating(true);
+    setCurrent(idx);
+    setTimeout(() => { setAnimating(false); setPrev(-1); }, 420);
+  }, [animating, current, total]);
+
+  const goNext = useCallback(() => goTo(current + 1), [goTo, current]);
+  const goPrev = useCallback(() => goTo(current - 1), [goTo, current]);
+  useKeyboard(goPrev, goNext);
+
+  const slide = SLIDES[current];
+  const SlideComp = SLIDE_RENDERERS[slide.type];
+  const progress = ((current + 1) / total) * 100;
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#FAF8F3", fontFamily: "'Noto Sans Arabic', 'Noto Naskh Arabic', 'Segoe UI', sans-serif", direction: "rtl", position: "relative", overflow: "hidden" }}>
+      {/* Subtle background pattern */}
+      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 1px 1px, rgba(201,168,76,0.04) 1px, transparent 0)", backgroundSize: "32px 32px", pointerEvents: "none", zIndex: 0 }} />
+
+      {/* Progress bar */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: showSidebar ? 220 : 0, height: 2, background: "rgba(201,168,76,0.15)", zIndex: 100 }}>
+        <div style={{ height: "100%", background: "#C9A84C", width: `${progress}%`, transition: "width 0.4s cubic-bezier(0.4,0,0.2,1)" }} />
+      </div>
+
+      {/* Top bar */}
+      <div style={{ position: "fixed", top: 0, left: showSidebar ? 220 : 0, right: 0, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px 0 24px", background: "rgba(250,248,243,0.9)", backdropFilter: "blur(8px)", zIndex: 90, borderBottom: "0.5px solid rgba(201,168,76,0.15)", transition: "left 0.3s" }} dir="rtl">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => setShowOverview(true)} style={{ fontSize: 11, fontWeight: 600, color: "#8A8AA0", background: "none", border: "0.5px solid rgba(0,0,0,0.12)", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>نظرة عامة</button>
+          <span style={{ fontSize: 11, color: "#8A8AA0" }}>{slide.tag}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 12, color: "#4A4A6A", fontWeight: 600 }}>{current + 1} / {total}</span>
+          <div style={{ display: "flex", gap: 2 }}>
+            {SLIDES.map((_, i) => (
+              <button key={i} onClick={() => goTo(i)} style={{ width: i === current ? 16 : 6, height: 6, borderRadius: 3, background: i === current ? "#C9A84C" : "rgba(201,168,76,0.25)", border: "none", cursor: "pointer", transition: "all 0.2s", padding: 0 }} />
+            ))}
+          </div>
+          <button onClick={() => setShowSidebar(v => !v)} style={{ fontSize: 11, color: "#8A8AA0", background: "none", border: "0.5px solid rgba(0,0,0,0.12)", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>
+            {showSidebar ? "إخفاء" : "القائمة"}
+          </button>
+        </div>
+      </div>
+
+      {/* Main slide area */}
+      <div style={{ position: "fixed", top: 52, left: showSidebar ? 220 : 0, right: 0, bottom: 64, display: "flex", alignItems: "center", justifyContent: "center", transition: "left 0.3s" }}>
+        <div style={{ width: "100%", maxWidth: 1000, padding: "0 40px", height: "100%", overflow: "hidden", position: "relative" }}>
+          <div key={current} style={{
+            height: "100%",
+            animation: `slideIn 0.4s cubic-bezier(0.4,0,0.2,1) both`,
+          }}>
+            <style>{`
+              @keyframes slideIn {
+                from { opacity: 0; transform: translateX(${direction > 0 ? "-40px" : "40px"}); }
+                to { opacity: 1; transform: translateX(0); }
+              }
+            `}</style>
+            {SlideComp && <SlideComp slide={slide} />}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom navigation */}
+      <div style={{ position: "fixed", bottom: 0, left: showSidebar ? 220 : 0, right: 0, height: 64, display: "flex", alignItems: "center", justifyContent: "center", gap: 16, background: "rgba(250,248,243,0.9)", backdropFilter: "blur(8px)", borderTop: "0.5px solid rgba(201,168,76,0.15)", zIndex: 90, transition: "left 0.3s" }}>
+        <button onClick={goPrev} disabled={current === 0} style={{
+          display: "flex", alignItems: "center", gap: 6, padding: "8px 20px",
+          background: current === 0 ? "transparent" : "#1A1A2E",
+          color: current === 0 ? "#C4BFB5" : "#FAF8F3",
+          border: `0.5px solid ${current === 0 ? "rgba(0,0,0,0.1)" : "#1A1A2E"}`,
+          borderRadius: 8, cursor: current === 0 ? "default" : "pointer",
+          fontSize: 12, fontWeight: 600, fontFamily: "inherit", transition: "all 0.2s"
+        }}>
+          → السابق
+        </button>
+        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+          <span style={{ fontSize: 11, color: "#8A8AA0" }}>شريحة</span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: "#1A1A2E", minWidth: 24, textAlign: "center" }}>{current + 1}</span>
+          <span style={{ fontSize: 11, color: "#8A8AA0" }}>من {total}</span>
+        </div>
+        <button onClick={goNext} disabled={current === total - 1} style={{
+          display: "flex", alignItems: "center", gap: 6, padding: "8px 20px",
+          background: current === total - 1 ? "transparent" : "#C9A84C",
+          color: current === total - 1 ? "#C4BFB5" : "#1A1A2E",
+          border: `0.5px solid ${current === total - 1 ? "rgba(0,0,0,0.1)" : "#C9A84C"}`,
+          borderRadius: 8, cursor: current === total - 1 ? "default" : "pointer",
+          fontSize: 12, fontWeight: 700, fontFamily: "inherit", transition: "all 0.2s"
+        }}>
+          التالي ←
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <Sidebar current={current} onSelect={goTo} visible={showSidebar} />
+
+      {/* Overview */}
+      {showOverview && <OverviewMap current={current} onSelect={goTo} onClose={() => setShowOverview(false)} />}
+
+      {/* Keyboard hint */}
+      <div style={{ position: "fixed", bottom: 72, left: "50%", transform: "translateX(-50%)", fontSize: 10, color: "rgba(0,0,0,0.25)", pointerEvents: "none", whiteSpace: "nowrap" }}>
+        ← → للتنقل بالكيبورد
+      </div>
+    </div>
+  );
+}
