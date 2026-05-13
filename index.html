@@ -1,1012 +1,1299 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أجاويد | وكالة التسويق العقاري المتخصصة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
-const SLIDES = [
-  {
-    id: "cover",
-    type: "cover",
-    tag: "تقرير استراتيجي · 2025",
-    title: "استراتيجية التميز\nالإبداعي والتشغيلي",
-    subtitle: "إطار تحويل شامل للفريق الإبداعي نحو منظومة DesignOps عالية الكفاءة",
-    stats: [
-      { n: "7", l: "نقاط احتكاك محددة" },
-      { n: "3", l: "منهجيات عالمية" },
-      { n: "90+", l: "يوماً للتحول الكامل" },
-      { n: "B2G/B2B", l: "القطاعات المستهدفة" },
-    ],
-  },
-  {
-    id: "exec",
-    type: "exec",
-    tag: "01 · الملخص التنفيذي",
-    title: "الحكم الاستراتيجي",
-    lead: "المشكلة الجوهرية ليست نقص الكفاءات — بل غياب النظام الذي يُشغّلها.",
-    verdict:
-      "كل تأخير في تسليم، وكل مراجعة متكررة، وكل فرصة ضائعة هي تكلفة مباشرة لغياب DesignOps. الاستثمار في المنهجية يعني تعظيم العائد على كل موهبة موجودة بالفعل — دون إضافة موارد.",
-    blocks: [
-      {
-        icon: "👥",
-        title: "الرأس المال البشري",
-        desc: "فريق إبداعي بمهارات عالية يشمل تصميم ثلاثي الأبعاد — محاصر في بنية تشغيلية تستنزف طاقته",
-      },
-      {
-        icon: "💻",
-        title: "البنية التقنية",
-        desc: "عتاد ممتاز وبيئة محفزة 85% — يفتقر لمنظومة رقمية لإدارة العمل والأرشفة",
-      },
-      {
-        icon: "🏛",
-        title: "السوق المستهدف",
-        desc: "B2G/B2B في قطاع الفعاليات — يكافئ الاحترافية الظاهرة في العروض قبل أي شيء آخر",
-      },
-      {
-        icon: "📈",
-        title: "إرادة التحول",
-        desc: "رغبة الإدارة العليا في التوسع — رافعة تنفيذية حاسمة جاهزة للتفعيل",
-      },
-    ],
-  },
-  {
-    id: "diagnosis",
-    type: "maturity",
-    tag: "02 · تشخيص الوضع الراهن",
-    title: "مستوى النضج التشغيلي",
-    lead: "قراءة موضوعية للوضع الحالي عبر ثلاثة أبعاد تشغيلية رئيسية",
-    level: "المستوى 1 من 5",
-    levelLabel: "تفاعلي غير منظم",
-    metrics: [
-      { label: "الطلبات الشفهية بلا توثيق", value: "~90%", status: "bad" },
-      { label: "نظام إدارة المهام", value: "معدوم", status: "bad" },
-      { label: "وضوح صلاحية الاعتماد", value: "غائب", status: "bad" },
-      { label: "الامتثال البيئي", value: "85%", status: "warn" },
-    ],
-    pillars: [
-      {
-        icon: "👤",
-        color: "#7C3AED",
-        title: "محور الأفراد",
-        desc: "مشرف واحد يؤدي دور المدير والمنفذ. أدوار غير معرّفة وحواجز ثقافية تعيق التواصل الفعّال.",
-      },
-      {
-        icon: "⚙️",
-        color: "#B45309",
-        title: "محور العمليات",
-        desc: "لا منهجية موحدة. كل مشروع يبدأ من الصفر تنظيمياً مع احتمالية عالية للتعديلات المتكررة.",
-      },
-      {
-        icon: "🔧",
-        color: "#1D4ED8",
-        title: "محور الأدوات",
-        desc: "الفجوة ليست في العتاد الجسدي بل في منظومة العمل الرقمية: لا مهام، لا أرشفة، لا نظام تصميم.",
-      },
-    ],
-  },
-  {
-    id: "rootcause",
-    type: "rootcause",
-    tag: "03 · تحليل الأسباب الجذرية",
-    title: "ما وراء الأعراض",
-    lead: "وراء كل تأخير وكل تعديل متكرر — سبب جذري أعمق يجب معالجته أولاً",
-    causes: [
-      {
-        type: "هيكلي",
-        color: "#DC2626",
-        title: "غياب البنية التنظيمية للقسم الإبداعي",
-        effect:
-          "المشرف عاجز عن التخطيط الاستراتيجي لانشغاله بالتنفيذ اليومي. كل قسم خارجي يتعامل مع الفريق كأداة تنفيذ فورية.",
-      },
-      {
-        type: "عملياتي",
-        color: "#B45309",
-        title: "عشوائية قناة الإدخال: الموجز الشفهي",
-        effect:
-          "التعديلات المتكررة ليست خللاً في الأداء الإبداعي — بل هي نتيجة حتمية لغياب تعريف واضح للمطلوب منذ البداية.",
-      },
-      {
-        type: "تقني",
-        color: "#1D4ED8",
-        title: "غياب منظومة إدارة المعرفة والأصول",
-        effect:
-          "الفريق يُعيد اختراع العجلة في كل مشروع. الأعمال السابقة غير موثّقة ومنع بناء مكتبة أصول تُسرّع العمل.",
-      },
-      {
-        type: "سلطوي",
-        color: "#7C3AED",
-        title: "تعدد مصادر التقييم وغياب الاعتماد",
-        effect:
-          "حلقات مراجعة لا نهاية لها. كل طرف يُدخل تعديلاته دون رؤية متكاملة، مما يُفقد المخرجات تماسكها.",
-      },
-      {
-        type: "استراتيجي",
-        color: "#065F46",
-        title: "ضعف تموضع الشركة في العروض الفنية",
-        effect:
-          "المنافسون يفوزون ليس بكفاءة تنفيذية أعلى، بل بقدرة أكبر على إقناع صانع القرار بصرياً وسردياً.",
-      },
-    ],
-  },
-  {
-    id: "swot",
-    type: "swot",
-    tag: "04 · تحليل SWOT",
-    title: "قراءة واقعية غير مجاملة",
-    lead: "الأساس الذي تُبنى عليه قرارات التخصيص الاستراتيجي",
-    quadrants: [
-      {
-        label: "نقاط القوة",
-        en: "Strengths",
-        color: "#065F46",
-        bg: "rgba(6,95,70,0.06)",
-        items: [
-          "كفاءات بشرية عالية وسرعة إنجاز في 3D والمهام المعقدة",
-          "بنية تحتية تقنية ممتازة وعتاد داعم للإنتاج",
-          "بيئة عمل مادية محفزة بامتثال 85%",
-          "إرادة الإدارة العليا الصريحة في التوسع",
-          "تنوع التخصصات يتيح حلولاً متكاملة",
-        ],
-      },
-      {
-        label: "نقاط الضعف",
-        en: "Weaknesses",
-        color: "#DC2626",
-        bg: "rgba(220,38,38,0.05)",
-        items: [
-          "تداخل الأدوار وغياب خطوط الإبلاغ الواضحة",
-          "الاعتماد الكلي على التوجيهات الشفهية",
-          "لا أدوات إدارة مهام ولا أرشفة موحدة",
-          "غياب آلية اعتماد واضحة ومحددة الصلاحيات",
-          "ضعف العروض الفنية: غياب السرد الاستراتيجي",
-        ],
-      },
-      {
-        label: "الفرص",
-        en: "Opportunities",
-        color: "#1D4ED8",
-        bg: "rgba(29,78,216,0.05)",
-        items: [
-          "نظام إدارة مهام سيُحدث قفزة فورية في الإنتاجية",
-          "توحيد الموجز يوفر ساعات من التعديلات المتكررة",
-          "تحسين العروض يرفع مباشرة معدل الفوز بالمناقصات",
-          "Agile يخلق شفافية تبني الثقة مع الإدارة",
-          "نمو قطاع الفعاليات الحكومي في المنطقة",
-        ],
-      },
-      {
-        label: "التهديدات",
-        en: "Threats",
-        color: "#B45309",
-        bg: "rgba(180,83,9,0.05)",
-        items: [
-          "الاحتراق الوظيفي نتيجة الضغط المزمن والعمل العشوائي",
-          "فقدان الفرص التجارية بسبب تأخر التسليمات",
-          "هدر طاقة المبدعين في مهام إدارية وتنسيقية",
-          "فقدان المواهب لغياب مسار وظيفي واضح",
-          "تراجع جودة المخرجات على المدى البعيد",
-        ],
-      },
-    ],
-  },
-  {
-    id: "friction",
-    type: "friction",
-    tag: "05 · خريطة نقاط الاحتكاك",
-    title: "سبع نقاط ألم تشغيلية",
-    lead: "مُحددة ومُقيّمة حسب الأثر المباشر على المخرجات والعلاقات التجارية",
-    points: [
-      {
-        n: "01",
-        impact: "عالي جداً",
-        impactColor: "#DC2626",
-        title: "غياب الهيكلة التنظيمية",
-        desc: "مشرف القسم يتلقى طلبات من أقسام متعددة دون قناة موحدة أو نظام أولويات — تضارب الطلبات وانهيار التخطيط اليومي.",
-      },
-      {
-        n: "02",
-        impact: "عالي جداً",
-        impactColor: "#DC2626",
-        title: "عشوائية الموجز الإبداعي",
-        desc: "الاعتماد على التوجيهات الشفهية يُنتج فجوة بين ما يُطلب وما يُفهم. التعديلات المتكررة أعراض لغياب تعريف واضح.",
-      },
-      {
-        n: "03",
-        impact: "عالي",
-        impactColor: "#DC2626",
-        title: "ضعف البنية التحتية الرقمية",
-        desc: "غياب أدوات إدارة المهام وأنظمة الأرشفة الموحدة يعني ضياع الأعمال وعجز كامل عن قياس الإنتاجية.",
-      },
-      {
-        n: "04",
-        impact: "عالي",
-        impactColor: "#DC2626",
-        title: "تعدد مصادر التقييم",
-        desc: "كل شخص يرى نفسه مُخوَّلاً بالمراجعة. حلقات تعديل لا نهاية لها تنتهي بمخرج لا يُقنع أحداً فعلياً.",
-      },
-      {
-        n: "05",
-        impact: "متوسط-عالي",
-        impactColor: "#B45309",
-        title: "غياب منهجية موحدة لسير العمل",
-        desc: "لا Agile، لا Waterfall. كل مشروع يبدأ من الصفر تنظيمياً — الأعضاء الجدد لا يجدون نظاماً يندمجون معه.",
-      },
-      {
-        n: "06",
-        impact: "متوسط-عالي",
-        impactColor: "#B45309",
-        title: "غياب تتبع الوقت والجهد",
-        desc: "لا نظام لتقدير وقت المهام. النتيجة: مواقف حرجة كتسليم العروض الفنية بعد الموعد النهائي.",
-      },
-      {
-        n: "07",
-        impact: "عالي جداً · تجاري",
-        impactColor: "#DC2626",
-        title: "ضعف العروض الفنية للعملاء",
-        desc: "تعتمد على 3D دون سياق استراتيجي. صانع القرار الحكومي يبحث عن إثبات جدارة ومنهجية — ليس جمالاً بصرياً فقط.",
-      },
-    ],
-  },
-  {
-    id: "framework",
-    type: "framework",
-    tag: "06 · إطار DesignOps",
-    title: "نموذج التحول المتكامل",
-    lead: "ثلاثة منهجيات عالمية مدمجة في نظام واحد مُصمَّم لواقع الفريق الراهن",
-    pillars: [
-      {
-        color: "#7C3AED",
-        bg: "rgba(124,58,237,0.07)",
-        icon: "👥",
-        title: "الأفراد · People",
-        sub: "من أفراد مبعثرين إلى فريق بأدوار محددة",
-        now: ["مشرف واحد يدير وينفذ", "أدوار غير معرّفة", "حواجز ثقافية ولغوية"],
-        target: ["مصفوفة RACI لكل دور", "قادة مشاريع داخليون", "ثقافة تواصل واضحة"],
-      },
-      {
-        color: "#B45309",
-        bg: "rgba(180,83,9,0.07)",
-        icon: "⚙️",
-        title: "العمليات · Process",
-        sub: "من الفوضى التفاعلية إلى نظام رشيق قابل للقياس",
-        now: ["لا منهجية موحدة", "موجز شفهي غير موثّق", "غياب أرشفة وتتبع الوقت"],
-        target: ["Agile Creative Workflow", "موجز إبداعي رقمي إلزامي", "نظام أرشفة موحد"],
-      },
-      {
-        color: "#1D4ED8",
-        bg: "rgba(29,78,216,0.07)",
-        icon: "🔧",
-        title: "الأدوات · Tools",
-        sub: "من العتاد المُهدَر إلى منظومة رقمية مُضاعِفة للكفاءة",
-        now: ["لا أداة لإدارة المهام", "لا مكتبة أصول مشتركة", "لا نظام تصميم موحد"],
-        target: ["ClickUp / Asana مُطبَّق", "Digital Asset Management", "Design System موحد"],
-      },
-    ],
-    methodologies: [
-      { name: "DesignOps Maturity Model", desc: "تطوير قدرات الفريق عبر الأفراد والعمليات والأدوات" },
-      { name: "Double Diamond", desc: "اكتشاف ← تعريف ← تطوير ← تسليم" },
-      { name: "Agile Creative Workflow", desc: "دورات قصيرة · شفافية · تحسين مستمر" },
-    ],
-  },
-  {
-    id: "opportunities",
-    type: "opportunities",
-    tag: "07 · الفرص الاستراتيجية",
-    title: "أربع فرص عالية الأثر",
-    lead: "قابلة للتنفيذ الفوري — مرتبة حسب السرعة والأثر التجاري",
-    opps: [
-      {
-        n: "01",
-        color: "#B45309",
-        title: "تحويل العروض الفنية إلى أداة تسويقية",
-        desc: "العرض الفني الاحترافي في B2G هو الفارق بين الفوز والخسارة. الشركة تمتلك القدرة التنفيذية — تحتاج فقط لإظهارها بصرياً وسردياً.",
-        impact: "أثر تجاري مباشر على الإيرادات",
-      },
-      {
-        n: "02",
-        color: "#1D4ED8",
-        title: "الموجز الإبداعي الرقمي كأول خطوة تحويلية",
-        desc: "نموذج إلزامي موحد سيُقلص التعديلات 40-60%. هذا وحده يُحرر ساعات أسبوعية لإعادة توجيهها للعمل الإبداعي الحقيقي.",
-        impact: "تأثير سريع على الكفاءة الداخلية",
-      },
-      {
-        n: "03",
-        color: "#7C3AED",
-        title: "أداة المهام كرافعة شفافية مع الإدارة",
-        desc: "اعتماد ClickUp/Asana يُنشئ سجلاً شفافاً يُثبت حجم العمل الفعلي — يفتح نقاشاً موضوعياً حول الأولويات والموارد.",
-        impact: "تأثير على ثقافة المساءلة",
-      },
-      {
-        n: "04",
-        color: "#065F46",
-        title: "مكتبة الأصول الرقمية كعامل تسريع",
-        desc: "أرشفة الأعمال وتوحيد الأصول المتكررة يُقلص وقت كل مشروع جديد ويُؤسس هوية بصرية تُقوي الحضور في السوق.",
-        impact: "تأثير على جودة المخرجات وسرعتها",
-      },
-    ],
-  },
-  {
-    id: "roadmap",
-    type: "roadmap",
-    tag: "08 · خطة التنفيذ",
-    title: "ثلاث مراحل تحويلية",
-    lead: "مُصممة للتراكم التدريجي دون إرهاق المنظمة — كل مرحلة تبني على سابقتها",
-    phases: [
-      {
-        n: "01",
-        color: "#1D4ED8",
-        bg: "rgba(29,78,216,0.06)",
-        label: "التأسيس والتمكين",
-        time: "أول 30 يوماً",
-        items: [
-          "وضع مصفوفة RACI لكل دور في الفريق والأقسام المرتبطة",
-          "تصميم واعتماد الموجز الإبداعي الرقمي الإلزامي",
-          "اختيار وتطبيق أداة إدارة المهام مع تدريب الفريق",
-          "قرار رسمي: إيقاف الطلبات الشفهية نهائياً",
-        ],
-      },
-      {
-        n: "02",
-        color: "#B45309",
-        bg: "rgba(180,83,9,0.06)",
-        label: "توحيد المعايير والتحسين",
-        time: "30 – 90 يوماً",
-        items: [
-          "إطلاق أول دورة عمل رشيقة (Sprint) بمدة أسبوعين",
-          "إنشاء نظام أرشفة وتسمية موحد للملفات",
-          "تفعيل مصفوفة الاعتماد وتحديد أصحاب الصلاحية",
-          "ورشة Double Diamond لتدريب الفريق على الاكتشاف والتعريف",
-          "إعادة هيكلة نموذج العرض الفني الاستراتيجي",
-        ],
-      },
-      {
-        n: "03",
-        color: "#065F46",
-        bg: "rgba(6,95,70,0.06)",
-        label: "القياس والتميز",
-        time: "90 يوماً وما بعدها",
-        items: [
-          "تفعيل لوحة مؤشرات الأداء الداخلية",
-          "بناء مكتبة الأصول الرقمية المشتركة",
-          "تطبيق سياسة العمل الهجين المرن",
-          "مراجعة تنظيمية دورية مستندة للبيانات لا الانطباعات",
-        ],
-      },
-    ],
-  },
-  {
-    id: "kpis",
-    type: "kpis",
-    tag: "09 · مؤشرات الأداء",
-    title: "منظومة القياس والمساءلة",
-    lead: "مؤشرات قابلة للقياس الفعلي — لإثبات أثر التحول وتوجيه القرارات اليومية",
-    kpis: [
-      { domain: "الكفاءة التشغيلية", name: "معدل التعديلات / مشروع", target: "< 2 جولة", time: "قياس شهري", color: "#7C3AED" },
-      { domain: "الالتزام الزمني", name: "نسبة التسليم في الموعد", target: "90%+ خلال 90 يوماً", time: "قياس أسبوعي", color: "#1D4ED8" },
-      { domain: "جودة الإدخال", name: "طلبات الموجز الرسمي", target: "100% خلال 30 يوماً", time: "قياس أسبوعي", color: "#065F46" },
-      { domain: "رضا الفريق", name: "وضوح الأدوار (استبيان)", target: "4/5 خلال 60 يوماً", time: "قياس شهري", color: "#B45309" },
-      { domain: "الأثر التجاري", name: "معدل الفوز بالمناقصات", target: "نمو 25%+ سنوياً", time: "قياس ربعي", color: "#DC2626" },
-      { domain: "كفاءة الموارد", name: "نسبة الوقت الإبداعي", target: "70% إبداعي / 30% إداري", time: "قياس شهري", color: "#7C3AED" },
-    ],
-  },
-  {
-    id: "proposals",
-    type: "proposals",
-    tag: "10 · العروض الفنية الفائزة",
-    title: "ست خطوات للإقناع",
-    lead: "تحويل العروض من وثائق معلوماتية إلى أدوات إقناع استراتيجية تُقنع صانع القرار قبل أن يُكمل القراءة",
-    steps: [
-      {
-        n: "١",
-        title: "الخطاف السردي والملخص التنفيذي",
-        tags: ["Executive Summary", "Narrative Hook", "Value Proposition"],
-        desc: "الصفحة الأولى تُجيب: لماذا هذه الشركة تحديداً؟ بيان الفرصة + الحل الفريد + القيمة المضافة في صفحة واحدة.",
-      },
-      {
-        n: "٢",
-        title: "المنهجية الإبداعية وفلسفة التنفيذ",
-        tags: ["Creative Methodology", "Infographics", "Project Phases"],
-        desc: "الجهات الحكومية لا تشتري تصاميم جميلة — بل تشتري منهجية موثوقة. شرح Double Diamond وAgile يُحوّل الفريق إلى شريك استراتيجي.",
-      },
-      {
-        n: "٣",
-        title: "السرد البصري لمشاريع سابقة",
-        tags: ["Case Studies", "Visual Storytelling", "Testimonials"],
-        desc: "3-5 دراسات حالة: التحدي ← الحل ← النتائج بالأرقام. الشهادات سلاح إثبات يستحيل دحضه.",
-      },
-      {
-        n: "٤",
-        title: "خبرات الفريق والملفات المهنية",
-        tags: ["Team Profiles", "Relevant Experience", "Org Chart"],
-        desc: "الجهات الحكومية تبحث عن 'من سينفّذ'. ملفات موجزة مُركّزة على الخبرة ذات الصلة بالمشروع المحدد.",
-      },
-      {
-        n: "٥",
-        title: "الجدول الزمني ومعايير الجودة",
-        tags: ["Gantt Chart", "PMBOK", "Resource Planning"],
-        desc: "مخطط Gantt يُظهر التزاماً بالتخطيط الدقيق. الجهات الحكومية تُقيّم القدرة على الالتزام الزمني كمعيار جوهري.",
-      },
-      {
-        n: "٦",
-        title: "الامتثال والشهادات بأسلوب إبداعي",
-        tags: ["Compliance", "Certifications", "Creative Presentation"],
-        desc: "تحويل 'الورق الرسمي' إلى لحظة بصرية تُعزز الثقة. المتطلب القانوني يصبح ميزة تسويقية.",
-      },
-    ],
-  },
-  {
-    id: "vision",
-    type: "vision",
-    tag: "11 · الرؤية المستقبلية",
-    title: "من فريق إلى منظومة",
-    quote:
-      "الهدف ليس فريقاً يعمل بجدية أكبر — بل فريق يعمل بنظام أذكى. الموهبة وحدها لا تبني سمعة مؤسسية؛ المنهجية هي التي تُحوّل الموهبة إلى ميزة تنافسية مستدامة.",
-    evolution: [
-      { n: 1, color: "#DC2626", bg: "rgba(220,38,38,0.08)", title: "الفريق التفاعلي · الآن", desc: "ينفّذ ما يُطلب متى يُطلب — بلا نظام ولا توقع" },
-      { n: 2, color: "#B45309", bg: "rgba(180,83,9,0.08)", title: "الفريق المنظّم · 30-60 يوماً", desc: "أدوار محددة، أدوات فاعلة، عمليات موثّقة" },
-      { n: 3, color: "#1D4ED8", bg: "rgba(29,78,216,0.08)", title: "الفريق الاستراتيجي · 90-180 يوماً", desc: "يُشارك في القرار، يُقدّم مقترحات بالبيانات" },
-      { n: 4, color: "#065F46", bg: "rgba(6,95,70,0.08)", title: "الفريق المؤسسي · سنة", desc: "مرجع داخلي للتميز وأداة تنافسية في السوق" },
-    ],
-    outcomes: [
-      { icon: "🏆", title: "الأثر التجاري", desc: "ارتفاع معدل الفوز بالمناقصات وتحسين هامش الربحية عبر تقليل هدر الوقت." },
-      { icon: "❤️", title: "الأثر الإنساني", desc: "تراجع الاحتراق الوظيفي، مسار وظيفي واضح، ثقافة تُكرّس الاحترافية والنمو." },
-    ],
-    finalVerdict:
-      "هذا التحول لا يتطلب ميزانيات إضافية — يتطلب قراراً. قراراً بأن طريقة إدارة العمل الإبداعي لها قيمة استراتيجية مساوية لجودة مخرجاته.",
-  },
-];
+    <style>
+        :root {
+            --bg-0:       #07080B;
+            --bg-1:       #0D0F14;
+            --bg-2:       #131620;
+            --bg-card:    #181B26;
+            --bg-hover:   #1E2230;
+            --gold:       #C9A96E;
+            --gold-lt:    #E3CA98;
+            --gold-pale:  #F5EDD8;
+            --gold-dk:    #8B6835;
+            --gold-glow:  rgba(201,169,110,.12);
+            --gold-glow2: rgba(201,169,110,.06);
+            --txt-1:      #F0EBE0;
+            --txt-2:      #8A8478;
+            --txt-3:      #3E3C36;
+            --bdr:        rgba(201,169,110,.1);
+            --bdr-h:      rgba(201,169,110,.35);
+            --tr:         all .35s cubic-bezier(.4,0,.2,1);
+            --r:          3px;
+        }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-const useKeyboard = (onPrev, onNext) => {
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "ArrowLeft" || e.key === "ArrowDown") onNext();
-      if (e.key === "ArrowRight" || e.key === "ArrowUp") onPrev();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onPrev, onNext]);
-};
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            font-family:'Cairo',sans-serif;
+            background:var(--bg-0);
+            color:var(--txt-1);
+            direction:rtl;
+            overflow-x:hidden;
+            line-height:1.7;
+        }
+        ::-webkit-scrollbar{width:3px}
+        ::-webkit-scrollbar-track{background:var(--bg-0)}
+        ::-webkit-scrollbar-thumb{background:var(--gold-dk);border-radius:2px}
+        ::selection{background:var(--gold);color:var(--bg-0)}
 
-// ─── SLIDE COMPONENTS ────────────────────────────────────────────────────────
+        /* ── Typography ─────────────────────────── */
+        .disp-xl{font-size:clamp(2.6rem,5.5vw,5rem);font-weight:900;line-height:1.12;letter-spacing:-.02em}
+        .disp-lg{font-size:clamp(1.9rem,3.5vw,3.2rem);font-weight:800;line-height:1.2}
+        .disp-md{font-size:clamp(1.3rem,2.5vw,2rem);font-weight:700}
+        .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+        .gold-txt{
+            background:linear-gradient(130deg,var(--gold-lt) 0%,var(--gold) 55%,var(--gold-dk) 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+        }
 
-function CoverSlide({ slide }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", position: "relative" }}>
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-        {[...Array(6)].map((_, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            border: "1px solid rgba(201,168,76,0.08)",
-            borderRadius: "50%",
-            width: `${(i + 1) * 18}%`,
-            height: `${(i + 1) * 18}%`,
-            top: "50%", left: "50%",
-            transform: "translate(-50%,-50%)",
-          }} />
-        ))}
-      </div>
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.2em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 20, fontWeight: 600 }}>{slide.tag}</div>
-        <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.8rem)", fontWeight: 800, lineHeight: 1.15, color: "#1A1A2E", marginBottom: 24, whiteSpace: "pre-line" }}>{slide.title}</h1>
-        <div style={{ width: 64, height: 3, background: "#C9A84C", marginBottom: 24 }} />
-        <p style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)", color: "#4A4A6A", maxWidth: 560, lineHeight: 1.8 }}>{slide.subtitle}</p>
-        <div style={{ display: "flex", gap: 32, marginTop: 48, flexWrap: "wrap" }}>
-          {slide.stats.map((s, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, color: "#1A1A2E" }}>{s.n}</span>
-              <span style={{ fontSize: 11, color: "#8A8AA0", marginTop: 2 }}>{s.l}</span>
+        /* ── Layout ──────────────────────────────── */
+        .wrap{max-width:1220px;margin:0 auto;padding:0 2rem}
+        .section{padding:8rem 0}
+        .gold-bar{width:48px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:1.25rem 0}
+
+        /* ── Buttons ─────────────────────────────── */
+        .btn-g{
+            display:inline-flex;align-items:center;gap:.5rem;
+            padding:.75rem 2rem;
+            background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dk) 100%);
+            color:var(--bg-0);font-family:'Cairo',sans-serif;font-size:.875rem;font-weight:800;
+            text-decoration:none;border:none;cursor:pointer;
+            clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+            transition:var(--tr);
+        }
+        .btn-g:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(201,169,110,.28)}
+        .btn-o{
+            display:inline-flex;align-items:center;gap:.5rem;
+            padding:.75rem 2rem;
+            background:transparent;color:var(--gold);
+            font-family:'Cairo',sans-serif;font-size:.875rem;font-weight:600;
+            text-decoration:none;border:1px solid var(--bdr-h);cursor:pointer;transition:var(--tr);
+        }
+        .btn-o:hover{background:var(--gold-glow);border-color:var(--gold)}
+
+        /* ── Grid backgrounds ────────────────────── */
+        .grid-bg{
+            position:absolute;inset:0;pointer-events:none;
+            background-image:
+                linear-gradient(var(--bdr) 1px,transparent 1px),
+                linear-gradient(90deg,var(--bdr) 1px,transparent 1px);
+            background-size:70px 70px;
+        }
+        .grid-bg-sm{
+            position:absolute;inset:0;pointer-events:none;
+            background-image:
+                linear-gradient(rgba(201,169,110,.04) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(201,169,110,.04) 1px,transparent 1px);
+            background-size:40px 40px;
+        }
+
+        /* ══════════════════════════════════════════
+           NAVBAR
+        ══════════════════════════════════════════ */
+        #nav{
+            position:fixed;top:0;left:0;right:0;z-index:999;
+            padding:1.3rem 0;transition:var(--tr);
+        }
+        #nav.stuck{
+            background:rgba(7,8,11,.93);
+            backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+            border-bottom:1px solid var(--bdr);
+            padding:0.85rem 0;
+        }
+        .nav-in{display:flex;align-items:center;justify-content:space-between}
+        .logo-a{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+        .logo-svg{width:40px;height:40px;flex-shrink:0}
+        .logo-wordmark{font-size:1.3rem;font-weight:900;color:var(--txt-1)}
+        .logo-wordmark em{color:var(--gold);font-style:normal}
+        nav ul{display:flex;align-items:center;gap:2.5rem;list-style:none}
+        nav ul a{
+            font-size:.85rem;font-weight:600;color:var(--txt-2);
+            text-decoration:none;position:relative;transition:var(--tr);
+        }
+        nav ul a::after{
+            content:'';position:absolute;bottom:-4px;right:0;left:0;
+            height:1px;background:var(--gold);
+            transform:scaleX(0);transform-origin:right;transition:transform .3s ease;
+        }
+        nav ul a:hover{color:var(--gold-lt)}
+        nav ul a:hover::after{transform:scaleX(1)}
+        .nav-end{display:flex;align-items:center;gap:1rem}
+        .burger{
+            display:none;background:none;border:1px solid var(--bdr);
+            padding:.45rem .65rem;cursor:pointer;color:var(--gold);font-size:1.1rem;
+        }
+
+        /* Mobile overlay */
+        #mob-nav{
+            display:none;position:fixed;inset:0;
+            background:rgba(7,8,11,.98);z-index:9999;
+            flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;
+        }
+        #mob-nav.open{display:flex}
+        #mob-nav a{font-size:1.6rem;font-weight:800;color:var(--txt-1);text-decoration:none;transition:var(--tr)}
+        #mob-nav a:hover{color:var(--gold)}
+        .mob-close{
+            position:absolute;top:1.5rem;left:1.5rem;
+            background:none;border:1px solid var(--bdr);
+            color:var(--gold);font-size:1.1rem;padding:.4rem .7rem;cursor:pointer;
+        }
+
+        /* ══════════════════════════════════════════
+           HERO
+        ══════════════════════════════════════════ */
+        #hero{
+            min-height:100vh;display:flex;align-items:center;
+            position:relative;overflow:hidden;padding-top:7rem;
+        }
+        .hero-radial{
+            position:absolute;inset:0;pointer-events:none;
+            background:
+                radial-gradient(ellipse 90% 70% at 50% 110%,rgba(201,169,110,.09) 0%,transparent 60%),
+                radial-gradient(ellipse 45% 35% at 85% 8%,rgba(201,169,110,.06) 0%,transparent 55%);
+        }
+        /* Geometric decorative shapes */
+        .geo{position:absolute;pointer-events:none;border:1px solid rgba(201,169,110,.055)}
+        .geo-1{width:380px;height:380px;top:12%;left:3%;transform:rotate(18deg)}
+        .geo-2{width:220px;height:220px;bottom:8%;right:4%;transform:rotate(-22deg)}
+        .geo-3{
+            position:absolute;width:600px;height:600px;border-radius:50%;
+            border:1px solid rgba(201,169,110,.03);
+            top:50%;left:48%;transform:translate(-50%,-50%);pointer-events:none;
+        }
+        .hero-body{position:relative;z-index:2;max-width:760px}
+        .hero-chip{
+            display:inline-flex;align-items:center;gap:.6rem;
+            padding:.38rem 1.1rem;
+            background:rgba(201,169,110,.07);border:1px solid var(--bdr);
+            font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.12em;
+            margin-bottom:2rem;
+            opacity:0;animation:fadeUp .8s ease .1s forwards;
+        }
+        .hero-chip::before{content:'';width:7px;height:7px;background:var(--gold);border-radius:50%;animation:blink 2s infinite}
+        @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
+        .hero-h1{margin-bottom:1.5rem;opacity:0;animation:fadeUp .9s ease .25s forwards}
+        .hero-sub{
+            font-size:clamp(.95rem,1.8vw,1.15rem);color:var(--txt-2);
+            max-width:540px;margin-bottom:3rem;line-height:1.9;
+            opacity:0;animation:fadeUp .9s ease .42s forwards;
+        }
+        .hero-btns{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;opacity:0;animation:fadeUp .9s ease .58s forwards}
+        .hero-strip{
+            display:flex;align-items:center;gap:3rem;
+            margin-top:5rem;padding-top:2.5rem;border-top:1px solid var(--bdr);
+            opacity:0;animation:fadeUp .9s ease .75s forwards;
+        }
+        .hs-item{display:flex;flex-direction:column}
+        .hs-num{font-size:2rem;font-weight:900;color:var(--gold);line-height:1}
+        .hs-lbl{font-size:.75rem;color:var(--txt-2);margin-top:.25rem}
+
+        /* Scroll cue */
+        .scroll-cue{
+            position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
+            display:flex;flex-direction:column;align-items:center;gap:.5rem;
+            opacity:0;animation:fadeUp .9s ease 1.1s forwards;
+        }
+        .scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollAnim 2s ease infinite}
+        .scroll-lbl{font-size:.6rem;letter-spacing:.25em;color:var(--txt-3)}
+        @keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}50.01%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+
+        /* ══════════════════════════════════════════
+           MARQUEE TICKER
+        ══════════════════════════════════════════ */
+        .ticker-wrap{
+            overflow:hidden;border-top:1px solid var(--bdr);
+            border-bottom:1px solid var(--bdr);
+            background:var(--bg-1);padding:.9rem 0;
+        }
+        .ticker-track{display:flex;gap:4rem;animation:ticker 28s linear infinite;width:max-content}
+        .ticker-item{
+            font-size:.75rem;font-weight:700;letter-spacing:.18em;
+            color:var(--txt-3);white-space:nowrap;
+            display:flex;align-items:center;gap:1rem;
+        }
+        .ticker-item::before{content:'◆';color:var(--gold);font-size:.45rem}
+        @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+        /* ══════════════════════════════════════════
+           ABOUT
+        ══════════════════════════════════════════ */
+        #about{background:var(--bg-1);position:relative;overflow:hidden}
+        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+        .uvp-block{
+            border-right:3px solid var(--gold);padding:1.25rem 1.75rem;margin:2rem 0;
+            background:linear-gradient(135deg,var(--gold-glow2) 0%,transparent 100%);
+        }
+        .uvp-block p{font-size:1.05rem;font-weight:600;font-style:italic;color:var(--txt-1)}
+        .team-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.5rem}
+        .team-card{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:1.4rem;transition:var(--tr);
+        }
+        .team-card:hover{border-color:var(--bdr-h);background:var(--bg-hover)}
+        .team-role{font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--gold);display:block;margin-bottom:.35rem}
+        .team-ttl{font-size:.95rem;font-weight:800}
+        .team-desc{font-size:.78rem;color:var(--txt-2);margin-top:.4rem;line-height:1.6}
+
+        /* About visual */
+        .about-vis{position:relative}
+        .vis-frame{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:2.5rem;position:relative;overflow:hidden;
+        }
+        .vis-frame::before{content:'';position:absolute;top:0;right:0;width:70px;height:2px;background:var(--gold)}
+        .vis-caption{font-size:.7rem;color:var(--txt-3);text-align:center;margin-top:1.25rem;letter-spacing:.12em}
+
+        /* ══════════════════════════════════════════
+           SERVICES
+        ══════════════════════════════════════════ */
+        #services{position:relative;overflow:hidden}
+        .tabs-bar{display:flex;border:1px solid var(--bdr);width:fit-content;margin-bottom:3.5rem}
+        .tab-btn{
+            padding:.72rem 1.9rem;background:transparent;border:none;
+            border-left:1px solid var(--bdr);
+            color:var(--txt-2);font-family:'Cairo',sans-serif;
+            font-size:.85rem;font-weight:700;cursor:pointer;transition:var(--tr);
+        }
+        .tab-btn:first-child{border-left:none}
+        .tab-btn:hover{color:var(--gold-lt);background:var(--gold-glow)}
+        .tab-btn.on{background:var(--gold);color:var(--bg-0)}
+        .tab-pane{display:none}.tab-pane.on{display:block}
+
+        /* Packages */
+        .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+        .pkg-card{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:2.5rem;position:relative;transition:var(--tr);
+        }
+        .pkg-card:hover{border-color:var(--bdr-h);transform:translateY(-5px);background:var(--bg-hover)}
+        .pkg-card.star{
+            border-color:var(--gold);
+            background:linear-gradient(145deg,rgba(201,169,110,.09) 0%,var(--bg-card) 100%);
+        }
+        .pkg-crown{
+            position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+            background:var(--gold);color:var(--bg-0);
+            font-size:.65rem;font-weight:800;padding:.2rem 1.1rem;letter-spacing:.12em;
+        }
+        .pkg-ico{
+            width:50px;height:50px;background:var(--gold-glow);
+            border:1px solid var(--bdr);display:flex;align-items:center;
+            justify-content:center;font-size:1.4rem;margin-bottom:1.4rem;
+        }
+        .pkg-badge{font-size:.68rem;font-weight:700;letter-spacing:.2em;color:var(--gold);display:block;margin-bottom:.4rem}
+        .pkg-ttl{font-size:1.35rem;font-weight:900;margin-bottom:.9rem}
+        .pkg-desc{font-size:.83rem;color:var(--txt-2);margin-bottom:1.9rem;line-height:1.75}
+        .pkg-list{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+        .pkg-list li{font-size:.82rem;color:var(--txt-2);display:flex;align-items:flex-start;gap:.65rem}
+        .pkg-list li::before{content:'◆';color:var(--gold);font-size:.45rem;flex-shrink:0;margin-top:.38rem}
+        .pkg-list li.hi{color:var(--txt-1);font-weight:600}
+
+        /* custom note */
+        .custom-note{
+            text-align:center;margin-top:2rem;padding:1.4rem;
+            background:var(--bg-card);border:1px solid var(--bdr);
+            font-size:.83rem;color:var(--txt-2);
+        }
+
+        /* Addons */
+        .addon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem}
+        .addon-card{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:1.6rem;transition:var(--tr);
+        }
+        .addon-card:hover{border-color:var(--bdr-h);background:var(--bg-hover)}
+        .addon-ico{font-size:1.75rem;display:block;margin-bottom:.75rem}
+        .addon-ttl{font-size:.92rem;font-weight:800;margin-bottom:.4rem}
+        .addon-desc{font-size:.78rem;color:var(--txt-2);line-height:1.55}
+
+        /* Individual */
+        .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+        .svc-card{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:1.75rem;position:relative;overflow:hidden;transition:var(--tr);
+        }
+        .svc-card::after{
+            content:'';position:absolute;bottom:0;right:0;left:0;
+            height:2px;background:linear-gradient(90deg,var(--gold),transparent);
+            transform:scaleX(0);transform-origin:right;transition:transform .3s ease;
+        }
+        .svc-card:hover::after{transform:scaleX(1)}
+        .svc-card:hover{border-color:var(--bdr-h);background:var(--bg-hover)}
+        .svc-num{font-size:.65rem;font-weight:700;letter-spacing:.22em;color:var(--gold-dk);display:block;margin-bottom:.9rem}
+        .svc-ttl{font-size:.98rem;font-weight:800;margin-bottom:.45rem}
+        .svc-desc{font-size:.78rem;color:var(--txt-2);line-height:1.65}
+
+        /* ══════════════════════════════════════════
+           WHY US
+        ══════════════════════════════════════════ */
+        #why{background:var(--bg-1);position:relative}
+        .why-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:center}
+        .pillars{display:flex;flex-direction:column;gap:2rem}
+        .pillar{display:flex;gap:1.5rem;padding-bottom:2rem;border-bottom:1px solid var(--bdr)}
+        .pillar:last-child{border-bottom:none;padding-bottom:0}
+        .p-num{font-size:2.4rem;font-weight:900;color:var(--bdr);line-height:1;flex-shrink:0;min-width:48px}
+        .p-ttl{font-size:1.05rem;font-weight:800;margin-bottom:.45rem}
+        .p-txt{font-size:.83rem;color:var(--txt-2);line-height:1.75}
+
+        /* Metrics box */
+        .metrics{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:3rem;position:relative;
+        }
+        .metrics::before{
+            content:'';position:absolute;top:0;right:0;
+            width:45%;height:2px;
+            background:linear-gradient(90deg,var(--gold),transparent);
+        }
+        .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+        .m-item{text-align:center}
+        .m-num{font-size:2.4rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:.4rem}
+        .m-lbl{font-size:.75rem;color:var(--txt-2)}
+        .m-note{
+            margin-top:2.25rem;padding-top:2rem;border-top:1px solid var(--bdr);
+            font-size:.83rem;color:var(--txt-2);line-height:1.8;
+        }
+
+        /* ══════════════════════════════════════════
+           CLIENTS
+        ══════════════════════════════════════════ */
+        #clients{position:relative;overflow:hidden}
+        .clients-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+        .cl-card{
+            background:var(--bg-card);border:1px solid var(--bdr);
+            padding:2.5rem;display:flex;gap:1.75rem;
+            align-items:flex-start;transition:var(--tr);position:relative;overflow:hidden;
+        }
+        .cl-card::after{
+            content:'';position:absolute;top:0;right:0;bottom:0;
+            width:2.5px;background:var(--gold);
+            transform:scaleY(0);transition:transform .35s ease;
+        }
+        .cl-card:hover::after{transform:scaleY(1)}
+        .cl-card:hover{border-color:var(--bdr-h);background:var(--bg-hover)}
+        .cl-ico{
+            width:54px;height:54px;background:var(--gold-glow);
+            border:1px solid var(--bdr);display:flex;align-items:center;
+            justify-content:center;font-size:1.65rem;flex-shrink:0;
+        }
+        .cl-ttl{font-size:1.02rem;font-weight:800;margin-bottom:.5rem}
+        .cl-desc{font-size:.82rem;color:var(--txt-2);line-height:1.75}
+        .cl-tag{
+            display:inline-block;margin-top:.9rem;padding:.18rem .8rem;
+            background:var(--gold-glow);border:1px solid var(--bdr);
+            font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.1em;
+        }
+
+        /* ══════════════════════════════════════════
+           METHODOLOGY
+        ══════════════════════════════════════════ */
+        #method{background:var(--bg-1);position:relative}
+        .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+        .steps::before{
+            content:'';position:absolute;top:35px;
+            right:12%;left:12%;height:1px;
+            background:linear-gradient(90deg,transparent,var(--bdr),var(--bdr),transparent);z-index:0;
+        }
+        .step{text-align:center;padding:0 1.4rem;position:relative;z-index:1}
+        .step-n{
+            width:68px;height:68px;background:var(--bg-0);
+            border:1px solid var(--bdr);display:flex;align-items:center;
+            justify-content:center;font-size:1.2rem;font-weight:900;
+            color:var(--gold);margin:0 auto 1.5rem;transition:var(--tr);
+        }
+        .step:hover .step-n{background:var(--gold);color:var(--bg-0);border-color:var(--gold)}
+        .step-ttl{font-size:1rem;font-weight:800;margin-bottom:.65rem}
+        .step-desc{font-size:.78rem;color:var(--txt-2);line-height:1.65}
+
+        /* ══════════════════════════════════════════
+           CONTACT
+        ══════════════════════════════════════════ */
+        #contact{position:relative;overflow:hidden}
+        .contact-grid{display:grid;grid-template-columns:1fr 1.55fr;gap:5rem;align-items:start}
+        .ci-item{
+            display:flex;gap:1.25rem;margin-bottom:2rem;
+            padding-bottom:2rem;border-bottom:1px solid var(--bdr);
+        }
+        .ci-item:last-of-type{border-bottom:none}
+        .ci-ico{
+            width:48px;height:48px;background:var(--gold-glow);
+            border:1px solid var(--bdr);display:flex;align-items:center;
+            justify-content:center;font-size:1.2rem;flex-shrink:0;
+        }
+        .ci-lbl{font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--gold);display:block;margin-bottom:.35rem}
+        .ci-val{font-size:1.05rem;font-weight:800}
+        .ci-val.ltr{direction:ltr;text-align:right}
+
+        .socials{display:flex;gap:.7rem;margin-top:2.5rem}
+        .soc-a{
+            width:44px;height:44px;background:var(--bg-card);
+            border:1px solid var(--bdr);display:flex;align-items:center;
+            justify-content:center;color:var(--txt-2);text-decoration:none;
+            font-size:.95rem;transition:var(--tr);
+        }
+        .soc-a:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-glow)}
+
+        /* Form */
+        .cform{background:var(--bg-card);border:1px solid var(--bdr);padding:3rem;position:relative}
+        .cform::before{content:'';position:absolute;top:0;right:0;width:40%;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+        .cform h3{font-size:1.1rem;font-weight:800;margin-bottom:2rem}
+        .fg{margin-bottom:1.4rem}
+        .fl{display:block;font-size:.76rem;font-weight:700;color:var(--txt-2);margin-bottom:.45rem;letter-spacing:.05em}
+        .fi,.fs,.ft{
+            width:100%;background:var(--bg-0);border:1px solid var(--bdr);
+            color:var(--txt-1);font-family:'Cairo',sans-serif;
+            font-size:.88rem;padding:.82rem 1.2rem;transition:var(--tr);outline:none;direction:rtl;
+        }
+        .fs{appearance:none;-webkit-appearance:none;cursor:pointer}
+        .fi:focus,.fs:focus,.ft:focus{border-color:var(--gold);background:rgba(201,169,110,.04)}
+        .ft{resize:vertical;min-height:125px}
+        .frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+        /* ══════════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════════ */
+        #footer{background:var(--bg-0);border-top:1px solid var(--bdr);padding:4.5rem 0 2rem}
+        .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;margin-bottom:3rem}
+        .foot-brand p{font-size:.85rem;color:var(--txt-2);line-height:1.85;max-width:310px;margin-top:1rem}
+        .foot-col h4{font-size:.72rem;font-weight:700;letter-spacing:.2em;color:var(--gold);margin-bottom:1.4rem}
+        .foot-col ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+        .foot-col a{font-size:.85rem;color:var(--txt-2);text-decoration:none;transition:var(--tr)}
+        .foot-col a:hover{color:var(--gold-lt)}
+        .foot-bottom{
+            display:flex;align-items:center;justify-content:space-between;
+            padding-top:2rem;border-top:1px solid var(--bdr);
+        }
+        .foot-bottom p{font-size:.78rem;color:var(--txt-3)}
+        .foot-handle{font-size:.78rem;color:var(--gold);font-weight:700}
+
+        /* ══════════════════════════════════════════
+           SCROLL REVEAL
+        ══════════════════════════════════════════ */
+        .rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+        .rv.vis{opacity:1;transform:translateY(0)}
+        .rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}
+        .rv.d3{transition-delay:.3s}.rv.d4{transition-delay:.4s}
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media(max-width:1024px){
+            .pkg-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}
+            .addon-grid{grid-template-columns:1fr 1fr}
+            .about-grid,.why-grid,.contact-grid{grid-template-columns:1fr;gap:3.5rem}
+            .steps{grid-template-columns:1fr 1fr;gap:2.5rem}.steps::before{display:none}
+            .clients-grid{grid-template-columns:1fr}
+            .svc-grid{grid-template-columns:1fr 1fr}
+            .foot-grid{grid-template-columns:1fr 1fr}
+        }
+        @media(max-width:768px){
+            .section{padding:5rem 0}
+            nav ul{display:none}.burger{display:flex}
+            .pkg-grid{grid-template-columns:1fr}
+            .addon-grid{grid-template-columns:1fr}
+            .steps{grid-template-columns:1fr}
+            .svc-grid{grid-template-columns:1fr}
+            .foot-grid{grid-template-columns:1fr;gap:2.5rem}
+            .hero-strip{flex-wrap:wrap;gap:2rem}
+            .frow{grid-template-columns:1fr}
+            .team-row{grid-template-columns:1fr}
+            .disp-xl{font-size:2.2rem}
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══ MOBILE NAV OVERLAY ══════════════════════ -->
+<div id="mob-nav">
+    <button class="mob-close" onclick="closeMob()">✕</button>
+    <a href="#about"     onclick="closeMob()">من نحن</a>
+    <a href="#services"  onclick="closeMob()">خدماتنا</a>
+    <a href="#why"       onclick="closeMob()">لماذا أجاويد</a>
+    <a href="#clients"   onclick="closeMob()">عملاؤنا</a>
+    <a href="#method"    onclick="closeMob()">منهجيتنا</a>
+    <a href="#contact"   onclick="closeMob()">تواصل معنا</a>
+</div>
+
+<!-- ══ NAVBAR ═══════════════════════════════════ -->
+<header id="nav">
+    <div class="wrap">
+        <div class="nav-in">
+            <a href="#hero" class="logo-a">
+                <!-- Logo Mark SVG -->
+                <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x=".5" y=".5" width="39" height="39" stroke="#C9A96E" stroke-width="1"/>
+                    <polygon points="20,7 33,33 7,33" fill="none" stroke="#C9A96E" stroke-width="1.4"/>
+                    <rect x="16" y="24" width="8" height="9" fill="none" stroke="#C9A96E" stroke-width="1"/>
+                    <circle cx="20" cy="19" r="2.2" fill="#C9A96E"/>
+                    <line x1="0" y1="0" x2="40" y2="40" stroke="rgba(201,169,110,.08)" stroke-width="1"/>
+                </svg>
+                <span class="logo-wordmark">أجاويد <em>RM</em></span>
+            </a>
+
+            <nav>
+                <ul>
+                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#services">خدماتنا</a></li>
+                    <li><a href="#why">لماذا أجاويد</a></li>
+                    <li><a href="#clients">عملاؤنا</a></li>
+                    <li><a href="#method">منهجيتنا</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-end">
+                <a href="#contact" class="btn-g">ابدأ معنا</a>
+                <button class="burger" onclick="openMob()">☰</button>
             </div>
-          ))}
         </div>
-      </div>
     </div>
-  );
-}
+</header>
 
-function ExecSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", lineHeight: 1.2, marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: "clamp(1rem, 1.8vw, 1.2rem)", fontWeight: 600, color: "#4A4A6A", fontStyle: "italic", marginTop: 8 }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))", gap: 12 }}>
-        {slide.blocks.map((b, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.2rem 1.4rem" }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>{b.icon}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 6 }}>{b.title}</div>
-            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7 }}>{b.desc}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ background: "#1A1A2E", borderRadius: 12, padding: "1.4rem 1.8rem" }}>
-        <div style={{ fontSize: 10, letterSpacing: "0.15em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 6, fontWeight: 700 }}>الحكم الاستراتيجي</div>
-        <p style={{ fontSize: "clamp(0.85rem, 1.4vw, 0.95rem)", color: "rgba(240,237,228,0.88)", lineHeight: 1.9 }}>{slide.verdict}</p>
-      </div>
-    </div>
-  );
-}
+<!-- ══ HERO ═════════════════════════════════════ -->
+<section id="hero">
+    <div class="hero-radial"></div>
+    <div class="grid-bg"></div>
+    <div class="geo geo-1"></div>
+    <div class="geo geo-2"></div>
+    <div class="geo-3"></div>
 
-function MaturitySlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 28 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 6 }}>{slide.title}</h2>
-        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-        <div style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 10, padding: "1rem 1.5rem" }}>
-          <div style={{ fontSize: 12, color: "#DC2626", fontWeight: 700, marginBottom: 2 }}>مستوى النضج الحالي</div>
-          <div style={{ fontSize: "2rem", fontWeight: 800, color: "#1A1A2E" }}>{slide.level}</div>
-          <div style={{ fontSize: 12, color: "#DC2626" }}>{slide.levelLabel}</div>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          {[1,2,3,4,5].map(n => (
-            <div key={n} style={{ width: 40, height: 8, borderRadius: 4, background: n === 1 ? "#DC2626" : "rgba(201,168,76,0.2)" }} />
-          ))}
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", gap: 10 }}>
-        {slide.metrics.map((m, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 10, padding: "1rem 1.2rem" }}>
-            <div style={{ fontSize: 11, color: "#8A8AA0", marginBottom: 4 }}>{m.label}</div>
-            <div style={{ fontSize: "1.2rem", fontWeight: 800, color: m.status === "bad" ? "#DC2626" : "#B45309" }}>{m.value}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))", gap: 12 }}>
-        {slide.pillars.map((p, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.1rem 1.3rem", borderRight: `3px solid ${p.color}` }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: p.color, textTransform: "uppercase", marginBottom: 6 }}>{p.title}</div>
-            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7 }}>{p.desc}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+    <div class="wrap">
+        <div class="hero-body">
+            <div class="hero-chip">وكالة تسويق عقاري متخصصة · المملكة العربية السعودية</div>
 
-function RootCauseSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 6 }}>{slide.title}</h2>
-        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {slide.causes.map((c, i) => (
-          <div key={i} style={{ display: "flex", gap: 16, background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem", borderRight: `3px solid ${c.color}` }}>
-            <div style={{ minWidth: 72 }}>
-              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: c.color, padding: "2px 8px", background: `${c.color}15`, borderRadius: 20, display: "inline-block" }}>{c.type}</div>
+            <h1 class="disp-xl hero-h1">
+                <span>نفهم العقار</span><br>
+                <span class="gold-txt">من الداخل</span>
+            </h1>
+
+            <p class="hero-sub">
+                نمثّل قطاع العقار أمام السوق بلغة التسويق الاحترافي. من بناء الهوية البصرية إلى إطلاق الحملات الكبرى — شريكك الاستراتيجي في كل خطوة.
+            </p>
+
+            <div class="hero-btns">
+                <a href="#services" class="btn-g">اكتشف خدماتنا</a>
+                <a href="#contact" class="btn-o">تواصل مع الفريق</a>
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{c.title}</div>
-              <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.65 }}>{c.effect}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-function SwotSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, flex: 1 }}>
-        {slide.quadrants.map((q, i) => (
-          <div key={i} style={{ background: q.bg, border: `0.5px solid ${q.color}30`, borderRadius: 12, padding: "1.1rem 1.3rem", borderTop: `3px solid ${q.color}` }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 800, color: q.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{q.label}</span>
-              <span style={{ fontSize: 10, color: "#8A8AA0" }}>{q.en}</span>
-            </div>
-            {q.items.map((item, j) => (
-              <div key={j} style={{ display: "flex", gap: 8, padding: "4px 0", borderBottom: "0.5px solid rgba(0,0,0,0.05)", fontSize: 12, color: "#4A4A6A", lineHeight: 1.5 }}>
-                <span style={{ color: q.color, fontWeight: 700, flexShrink: 0 }}>—</span>
-                {item}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FrictionSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 20 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))", gap: 8 }}>
-        {slide.points.map((p, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem", borderRight: `3px solid ${p.impactColor}`, display: "flex", gap: 12 }}>
-            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "rgba(201,168,76,0.4)", minWidth: 32, lineHeight: 1 }}>{p.n}</div>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{p.title}</div>
-              <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.6, marginBottom: 4 }}>{p.desc}</div>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", background: `${p.impactColor}15`, color: p.impactColor, borderRadius: 20, letterSpacing: "0.05em" }}>{p.impact}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FrameworkSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {slide.pillars.map((p, i) => (
-          <div key={i} style={{ background: p.bg, border: `0.5px solid ${p.color}25`, borderRadius: 12, padding: "1rem 1.4rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-              <span style={{ fontSize: 18 }}>{p.icon}</span>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: p.color }}>{p.title}</div>
-                <div style={{ fontSize: 11, color: "#8A8AA0" }}>{p.sub}</div>
-              </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", color: "#DC2626", textTransform: "uppercase", marginBottom: 4 }}>الوضع الراهن</div>
-                {p.now.map((n, j) => <div key={j} style={{ fontSize: 11, color: "#DC2626", padding: "2px 0", opacity: 0.8 }}>• {n}</div>)}
-              </div>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", color: "#065F46", textTransform: "uppercase", marginBottom: 4 }}>الهدف الاستراتيجي</div>
-                {p.target.map((t, j) => <div key={j} style={{ fontSize: 11, color: "#065F46", padding: "2px 0", opacity: 0.9 }}>✓ {t}</div>)}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {slide.methodologies.map((m, i) => (
-          <div key={i} style={{ background: "rgba(201,168,76,0.1)", border: "0.5px solid rgba(201,168,76,0.35)", borderRadius: 8, padding: "0.5rem 0.9rem", flex: 1, minWidth: 160 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#8B6914", marginBottom: 2 }}>{m.name}</div>
-            <div style={{ fontSize: 10, color: "#4A4A6A" }}>{m.desc}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function OpportunitiesSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px,1fr))", gap: 12 }}>
-        {slide.opps.map((o, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.4rem", borderTop: `3px solid ${o.color}` }}>
-            <div style={{ fontSize: "2rem", fontWeight: 800, color: "rgba(201,168,76,0.3)", lineHeight: 1, marginBottom: 8 }}>{o.n}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 6 }}>{o.title}</div>
-            <div style={{ fontSize: 12, color: "#4A4A6A", lineHeight: 1.7, marginBottom: 8 }}>{o.desc}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#065F46" }}>↑ {o.impact}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function RoadmapSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {slide.phases.map((ph, i) => (
-          <div key={i} style={{ background: ph.bg, border: `0.5px solid ${ph.color}25`, borderRadius: 12, padding: "1.1rem 1.4rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-              <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 10px", background: `${ph.color}18`, color: ph.color, borderRadius: 20 }}>المرحلة {ph.n}</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E" }}>{ph.label}</span>
-              <span style={{ fontSize: 11, color: "#8A8AA0", marginRight: "auto" }}>{ph.time}</span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px,1fr))", gap: 4 }}>
-              {ph.items.map((item, j) => (
-                <div key={j} style={{ display: "flex", gap: 8, fontSize: 12, color: "#4A4A6A", lineHeight: 1.6 }}>
-                  <span style={{ color: ph.color, fontWeight: 700, flexShrink: 0 }}>→</span>
-                  {item}
+            <div class="hero-strip">
+                <div class="hs-item">
+                    <span class="hs-num">٣٦٠°</span>
+                    <span class="hs-lbl">تغطية تسويقية شاملة</span>
                 </div>
-              ))}
+                <div class="hs-item">
+                    <span class="hs-num">B2B</span>
+                    <span class="hs-lbl">متخصصون في الأعمال</span>
+                </div>
+                <div class="hs-item">
+                    <span class="hs-num">KSA</span>
+                    <span class="hs-lbl">خبرة السوق السعودي</span>
+                </div>
+                <div class="hs-item">
+                    <span class="hs-num">١٠٠٪</span>
+                    <span class="hs-lbl">تركيز على القطاع العقاري</span>
+                </div>
             </div>
-          </div>
-        ))}
-      </div>
+        </div>
     </div>
-  );
-}
 
-function KpisSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 14, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))", gap: 10 }}>
-        {slide.kpis.map((k, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 12, padding: "1.2rem 1.4rem", borderTop: `3px solid ${k.color}` }}>
-            <div style={{ fontSize: 10, color: "#8A8AA0", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{k.domain}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A2E", marginBottom: 8 }}>{k.name}</div>
-            <div style={{ fontSize: "1.1rem", fontWeight: 800, color: k.color, marginBottom: 4 }}>{k.target}</div>
-            <div style={{ fontSize: 10, color: "#8A8AA0" }}>{k.time}</div>
-          </div>
-        ))}
-      </div>
+    <div class="scroll-cue">
+        <div class="scroll-line"></div>
+        <span class="scroll-lbl">اكتشف</span>
     </div>
-  );
-}
+</section>
 
-function ProposalsSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 20 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-        <p style={{ fontSize: 13, color: "#4A4A6A" }}>{slide.lead}</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))", gap: 10 }}>
-        {slide.steps.map((s, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.2)", borderRadius: 10, padding: "1rem 1.2rem" }}>
-            <div style={{ display: "flex", gap: 10, marginBottom: 6 }}>
-              <div style={{ width: 32, height: 32, background: "rgba(201,168,76,0.12)", border: "0.5px solid rgba(201,168,76,0.4)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "#8B6914", flexShrink: 0 }}>{s.n}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", lineHeight: 1.4, paddingTop: 2 }}>{s.title}</div>
+<!-- ══ TICKER ════════════════════════════════════ -->
+<div class="ticker-wrap">
+    <div class="ticker-track" aria-hidden="true">
+        <span class="ticker-item">إدارة السوشيل ميديا</span>
+        <span class="ticker-item">بناء الهوية البصرية</span>
+        <span class="ticker-item">الحملات الإعلانية الرقمية</span>
+        <span class="ticker-item">التسويق الخارجي واللوحات</span>
+        <span class="ticker-item">الفعاليات العقارية</span>
+        <span class="ticker-item">المواقع الإلكترونية</span>
+        <span class="ticker-item">الاستشارات التسويقية</span>
+        <span class="ticker-item">الصورة الذهنية الاحترافية</span>
+        <span class="ticker-item">إدارة السوشيل ميديا</span>
+        <span class="ticker-item">بناء الهوية البصرية</span>
+        <span class="ticker-item">الحملات الإعلانية الرقمية</span>
+        <span class="ticker-item">التسويق الخارجي واللوحات</span>
+        <span class="ticker-item">الفعاليات العقارية</span>
+        <span class="ticker-item">المواقع الإلكترونية</span>
+        <span class="ticker-item">الاستشارات التسويقية</span>
+        <span class="ticker-item">الصورة الذهنية الاحترافية</span>
+    </div>
+</div>
+
+<!-- ══ ABOUT ═════════════════════════════════════ -->
+<section id="about" class="section">
+    <div class="wrap">
+        <div class="about-grid">
+            <!-- Text side -->
+            <div class="rv">
+                <p class="eyebrow">من نحن</p>
+                <div class="gold-bar"></div>
+                <h2 class="disp-lg" style="margin-bottom:1.5rem">
+                    تكامل النظرة<br><span class="gold-txt">وقوة التنفيذ</span>
+                </h2>
+
+                <div class="uvp-block">
+                    <p>"نحن لا نبيع تسويقاً — نحن نبني حضوراً يُحرّك السوق ويصنع الثقة."</p>
+                </div>
+
+                <p style="color:var(--txt-2);font-size:.93rem;line-height:1.9;margin-bottom:1.25rem">
+                    وُلدت أجاويد من رحم القطاع العقاري نفسه. مؤسّسوها ليسوا ضيوفاً على هذا السوق — هم جزء منه. أحدهم خبير مبيعات عقارية متمرّس يعرف احتياجات المطوّرين والوسطاء من الداخل، ويرى الفجوة التسويقية بعين من عاشها.
+                </p>
+                <p style="color:var(--txt-2);font-size:.93rem;line-height:1.9">
+                    والآخر قائد تنفيذي إبداعي يمتلك الأدوات والعلاقات والخبرة في تنفيذ مشاريع تسويقية بمستوى استثنائي عبر قطاعات متعددة. هذا التكامل النادر هو ما يجعلنا نختلف حقاً.
+                </p>
+
+                <div class="team-row">
+                    <div class="team-card">
+                        <span class="team-role">الشريك الاستراتيجي</span>
+                        <div class="team-ttl">خبير المبيعات العقارية</div>
+                        <p class="team-desc">يفهم القطاع من الداخل. يرى الفجوة. يعرف ما يحتاجه العميل قبل أن يطلبه.</p>
+                    </div>
+                    <div class="team-card">
+                        <span class="team-role">الشريك التنفيذي</span>
+                        <div class="team-ttl">قائد التسويق الإبداعي</div>
+                        <p class="team-desc">خبرة في التسويق عبر قطاعات متعددة. الإبداع والتنفيذ والعلاقات في يد واحدة.</p>
+                    </div>
+                </div>
             </div>
-            <p style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.65, marginBottom: 8 }}>{s.desc}</p>
-            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-              {s.tags.map((t, j) => (
-                <span key={j} style={{ fontSize: 9, padding: "2px 7px", background: "rgba(201,168,76,0.1)", border: "0.5px solid rgba(201,168,76,0.4)", borderRadius: 20, color: "#8B6914", fontWeight: 600 }}>{t}</span>
-              ))}
+
+            <!-- Visual side -->
+            <div class="rv d2 about-vis">
+                <div class="vis-frame">
+                    <!-- Architectural SVG Illustration -->
+                    <svg viewBox="0 0 420 330" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+                        <!-- Grid lines subtle -->
+                        <defs>
+                            <pattern id="gridp" width="30" height="30" patternUnits="userSpaceOnUse">
+                                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(201,169,110,0.04)" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="420" height="330" fill="url(#gridp)"/>
+
+                        <!-- Building B1 - leftmost short -->
+                        <rect x="30" y="160" width="55" height="155" fill="none" stroke="rgba(201,169,110,0.45)" stroke-width="1"/>
+                        <rect x="39" y="170" width="16" height="20" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="62" y="170" width="16" height="20" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="39" y="202" width="16" height="20" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="62" y="202" width="16" height="20" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="39" y="234" width="16" height="20" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.4)" stroke-width=".6"/>
+                        <rect x="62" y="234" width="16" height="20" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.4)" stroke-width=".6"/>
+
+                        <!-- Building B2 - medium left -->
+                        <rect x="105" y="110" width="80" height="205" fill="none" stroke="rgba(201,169,110,0.5)" stroke-width="1"/>
+                        <line x1="145" y1="110" x2="145" y2="315" stroke="rgba(201,169,110,0.12)" stroke-width=".8"/>
+                        <rect x="115" y="122" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="152" y="122" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="115" y="160" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="152" y="160" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="115" y="198" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="152" y="198" width="22" height="26" fill="rgba(201,169,110,0.08)" stroke="rgba(201,169,110,0.3)" stroke-width=".6"/>
+                        <rect x="115" y="236" width="22" height="26" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.45)" stroke-width=".6"/>
+                        <rect x="152" y="236" width="22" height="26" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.45)" stroke-width=".6"/>
+                        <rect x="115" y="274" width="22" height="26" fill="rgba(201,169,110,0.15)" stroke="rgba(201,169,110,0.5)" stroke-width=".6"/>
+                        <rect x="152" y="274" width="22" height="26" fill="rgba(201,169,110,0.15)" stroke="rgba(201,169,110,0.5)" stroke-width=".6"/>
+
+                        <!-- Building B3 - TALLEST center-right -->
+                        <rect x="210" y="30" width="90" height="285" fill="none" stroke="rgba(201,169,110,0.75)" stroke-width="1.4"/>
+                        <line x1="255" y1="30" x2="255" y2="315" stroke="rgba(201,169,110,0.15)" stroke-width="1"/>
+                        <rect x="220" y="44" width="26" height="32" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.4)" stroke-width=".7"/>
+                        <rect x="264" y="44" width="26" height="32" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.4)" stroke-width=".7"/>
+                        <rect x="220" y="90" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="264" y="90" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="220" y="136" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="264" y="136" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="220" y="182" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="264" y="182" width="26" height="32" fill="rgba(201,169,110,0.1)" stroke="rgba(201,169,110,0.35)" stroke-width=".7"/>
+                        <rect x="220" y="228" width="26" height="32" fill="rgba(201,169,110,0.14)" stroke="rgba(201,169,110,0.5)" stroke-width=".7"/>
+                        <rect x="264" y="228" width="26" height="32" fill="rgba(201,169,110,0.14)" stroke="rgba(201,169,110,0.5)" stroke-width=".7"/>
+                        <rect x="220" y="274" width="26" height="32" fill="rgba(201,169,110,0.18)" stroke="rgba(201,169,110,0.6)" stroke-width=".7"/>
+                        <rect x="264" y="274" width="26" height="32" fill="rgba(201,169,110,0.18)" stroke="rgba(201,169,110,0.6)" stroke-width=".7"/>
+                        <!-- Gold crown on tallest -->
+                        <line x1="210" y1="30" x2="300" y2="30" stroke="#C9A96E" stroke-width="2.5"/>
+                        <!-- Antenna -->
+                        <line x1="255" y1="10" x2="255" y2="30" stroke="#C9A96E" stroke-width="1.2"/>
+                        <circle cx="255" cy="8" r="3" fill="none" stroke="#C9A96E" stroke-width="1"/>
+
+                        <!-- Building B4 - right short -->
+                        <rect x="325" y="185" width="62" height="130" fill="none" stroke="rgba(201,169,110,0.38)" stroke-width=".9"/>
+                        <rect x="334" y="196" width="18" height="22" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.25)" stroke-width=".5"/>
+                        <rect x="360" y="196" width="18" height="22" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.25)" stroke-width=".5"/>
+                        <rect x="334" y="230" width="18" height="22" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.25)" stroke-width=".5"/>
+                        <rect x="360" y="230" width="18" height="22" fill="rgba(201,169,110,0.07)" stroke="rgba(201,169,110,0.25)" stroke-width=".5"/>
+                        <rect x="334" y="264" width="18" height="22" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.4)" stroke-width=".5"/>
+                        <rect x="360" y="264" width="18" height="22" fill="rgba(201,169,110,0.12)" stroke="rgba(201,169,110,0.4)" stroke-width=".5"/>
+
+                        <!-- Ground line -->
+                        <line x1="15" y1="315" x2="405" y2="315" stroke="rgba(201,169,110,0.25)" stroke-width="1"/>
+
+                        <!-- Stars -->
+                        <circle cx="80" cy="60" r="1.5" fill="#C9A96E" opacity=".5"/>
+                        <circle cx="175" cy="40" r="1" fill="#C9A96E" opacity=".35"/>
+                        <circle cx="370" cy="55" r="1.5" fill="#C9A96E" opacity=".45"/>
+                        <circle cx="50" cy="100" r="1" fill="#C9A96E" opacity=".25"/>
+                        <circle cx="400" cy="130" r="1" fill="#C9A96E" opacity=".3"/>
+
+                        <!-- Gold highlight top right glow -->
+                        <ellipse cx="380" cy="20" rx="60" ry="20" fill="rgba(201,169,110,0.04)"/>
+                    </svg>
+                    <p class="vis-caption">نبني الحضور العقاري الذي يُرى ويُذكر</p>
+                </div>
             </div>
-          </div>
-        ))}
-      </div>
+        </div>
     </div>
-  );
+</section>
+
+<!-- ══ SERVICES ══════════════════════════════════ -->
+<section id="services" class="section" style="background:var(--bg-1)">
+    <div class="wrap">
+        <div class="rv" style="margin-bottom:4rem">
+            <p class="eyebrow">خدماتنا</p>
+            <div class="gold-bar"></div>
+            <h2 class="disp-lg">ما نقدّمه لك<br><span class="gold-txt">بلا منازع</span></h2>
+            <p style="color:var(--txt-2);max-width:560px;margin-top:1rem;font-size:.93rem;line-height:1.85">
+                منظومة خدمات تسويقية متكاملة، مُصمَّمة حصرياً لقطاع العقار السعودي. اختر الباقة المناسبة أو خصّص احتياجاتك بحرية تامة.
+            </p>
+        </div>
+
+        <div class="tabs-bar rv">
+            <button class="tab-btn on" onclick="switchTab('pkg',this)">الباقات الرئيسية</button>
+            <button class="tab-btn" onclick="switchTab('add',this)">الخدمات الإضافية</button>
+            <button class="tab-btn" onclick="switchTab('ind',this)">الخدمات المفردة</button>
+        </div>
+
+        <!-- TAB: PACKAGES -->
+        <div id="tab-pkg" class="tab-pane on">
+            <div class="pkg-grid">
+                <!-- Pkg 1 -->
+                <div class="pkg-card rv">
+                    <div class="pkg-ico">🌐</div>
+                    <span class="pkg-badge">الباقة الأولى</span>
+                    <h3 class="pkg-ttl">الحضور الرقمي</h3>
+                    <p class="pkg-desc">للمبدئين الجادّين الذين يريدون بناء حضور رقمي قوي ومتماسك في السوق العقاري.</p>
+                    <ul class="pkg-list">
+                        <li class="hi">إدارة حسابات السوشيل ميديا</li>
+                        <li>إنتاج المحتوى البصري والكتابي</li>
+                        <li>التصميم الجرافيكي الشهري</li>
+                        <li>استراتيجية محتوى متخصصة</li>
+                        <li>تقارير أداء دورية</li>
+                    </ul>
+                </div>
+
+                <!-- Pkg 2 Featured -->
+                <div class="pkg-card star rv d1">
+                    <div class="pkg-crown">الأكثر طلباً</div>
+                    <div class="pkg-ico">🏛️</div>
+                    <span class="pkg-badge">الباقة الثانية</span>
+                    <h3 class="pkg-ttl">الهوية المتكاملة</h3>
+                    <p class="pkg-desc">بناء هوية احترافية متكاملة تعكس مكانتك في السوق وتجذب العملاء المثاليين.</p>
+                    <ul class="pkg-list">
+                        <li class="hi">كل ما في باقة الحضور +</li>
+                        <li class="hi">تصميم الهوية البصرية الكاملة (Logo, Brand Kit)</li>
+                        <li class="hi">إعداد الإيميل المهني والتوقيع الإلكتروني</li>
+                        <li>بناء الموقع الإلكتروني الاحترافي</li>
+                        <li>قالب العروض التقديمية</li>
+                        <li>الملف التعريفي للشركة</li>
+                    </ul>
+                </div>
+
+                <!-- Pkg 3 -->
+                <div class="pkg-card rv d2">
+                    <div class="pkg-ico">🚀</div>
+                    <span class="pkg-badge">الباقة الثالثة</span>
+                    <h3 class="pkg-ttl">التمدد والنمو</h3>
+                    <p class="pkg-desc">للمؤسسات الجاهزة للتوسع وكسب حصة أكبر من السوق بأدوات إعلانية متكاملة.</p>
+                    <ul class="pkg-list">
+                        <li class="hi">كل ما في باقة الهوية +</li>
+                        <li class="hi">إدارة الإعلانات الرقمية (Meta, Google, Snap, TikTok)</li>
+                        <li class="hi">الحملات الخارجية (لوحات، شاشات رقمية، مترو)</li>
+                        <li>استشارات تسويق عقاري متخصصة</li>
+                        <li>تقارير تحليلية متقدمة</li>
+                        <li>مدير حساب مخصص</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="custom-note rv">
+                ⚙️ &nbsp; جميع الباقات قابلة للتخصيص الكامل — أضف أو احذف خدمات بما يناسب احتياجاتك الفعلية بلا قيود
+            </div>
+        </div>
+
+        <!-- TAB: ADDONS -->
+        <div id="tab-add" class="tab-pane">
+            <div class="addon-grid">
+                <div class="addon-card rv">
+                    <span class="addon-ico">🎪</span>
+                    <h3 class="addon-ttl">تنظيم الفعاليات التسويقية</h3>
+                    <p class="addon-desc">تصميم وتنفيذ الفعاليات العقارية من معارض وحفلات إطلاق المشاريع إلى اليوم المفتوح.</p>
+                </div>
+                <div class="addon-card rv d1">
+                    <span class="addon-ico">📸</span>
+                    <h3 class="addon-ttl">التصوير والإنتاج الإعلامي</h3>
+                    <p class="addon-desc">تصوير احترافي للعقارات والمشاريع، وإنتاج فيديوهات ترويجية وجولات افتراضية.</p>
+                </div>
+                <div class="addon-card rv d2">
+                    <span class="addon-ico">🎯</span>
+                    <h3 class="addon-ttl">حملات الإطلاق الخاصة</h3>
+                    <p class="addon-desc">حملة تسويقية متكاملة لإطلاق مشروع جديد أو الدخول إلى سوق جديد بقوة وتأثير.</p>
+                </div>
+                <div class="addon-card rv d3">
+                    <span class="addon-ico">💡</span>
+                    <h3 class="addon-ttl">الاستشارة التسويقية المستقلة</h3>
+                    <p class="addon-desc">جلسات استراتيجية مخصصة لتشخيص وضعك التسويقي الحالي وبناء خارطة الطريق.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: INDIVIDUAL -->
+        <div id="tab-ind" class="tab-pane">
+            <div class="svc-grid">
+                <div class="svc-card rv">
+                    <span class="svc-num">٠١</span>
+                    <h3 class="svc-ttl">إدارة السوشيل ميديا</h3>
+                    <p class="svc-desc">إدارة محترفة لحساباتك على إنستقرام، تويتر (X)، لينكدإن، وسناب — بمحتوى يستهدف جمهورك العقاري.</p>
+                </div>
+                <div class="svc-card rv d1">
+                    <span class="svc-num">٠٢</span>
+                    <h3 class="svc-ttl">بناء الهوية البصرية</h3>
+                    <p class="svc-desc">تصميم الشعار والهوية الكاملة — ألوان، خطوط، وعناصر بصرية تعكس مكانتك المهنية في السوق.</p>
+                </div>
+                <div class="svc-card rv d2">
+                    <span class="svc-num">٠٣</span>
+                    <h3 class="svc-ttl">المواقع الإلكترونية</h3>
+                    <p class="svc-desc">تصميم وتطوير وإدارة مواقع عقارية احترافية تحوّل الزوار إلى عملاء فعليين.</p>
+                </div>
+                <div class="svc-card rv">
+                    <span class="svc-num">٠٤</span>
+                    <h3 class="svc-ttl">الإعلانات الرقمية</h3>
+                    <p class="svc-desc">إدارة حملات مدفوعة على Meta, Google, TikTok وSnapchat بأعلى معدلات تحويل ممكنة.</p>
+                </div>
+                <div class="svc-card rv d1">
+                    <span class="svc-num">٠٥</span>
+                    <h3 class="svc-ttl">الإعلانات الخارجية</h3>
+                    <p class="svc-desc">تصميم وإدارة حملات اللوحات الإعلانية، الشاشات الرقمية، ووسائل النقل العام والمترو.</p>
+                </div>
+                <div class="svc-card rv d2">
+                    <span class="svc-num">٠٦</span>
+                    <h3 class="svc-ttl">الصورة الذهنية الاحترافية</h3>
+                    <p class="svc-desc">بناء صورة ذهنية قوية عبر الإيميل الاحترافي، التوقيع الرقمي، والملف التعريفي المميز.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ WHY US ══════════════════════════════════ -->
+<section id="why" class="section">
+    <div class="wrap">
+        <div class="why-grid">
+            <div class="rv">
+                <p class="eyebrow">لماذا أجاويد</p>
+                <div class="gold-bar"></div>
+                <h2 class="disp-lg" style="margin-bottom:3rem">
+                    ما يجعلنا<br><span class="gold-txt">مختلفين فعلاً</span>
+                </h2>
+
+                <div class="pillars">
+                    <div class="pillar">
+                        <span class="p-num">٠١</span>
+                        <div>
+                            <h3 class="p-ttl">خبرة من داخل القطاع</h3>
+                            <p class="p-txt">فريقنا ليس مجرد مسوّقين يفهمون العقار — بل هم من داخل السوق، يعيشون تحدياته ويعرفون لغته. هذا الفهم العميق هو ما يجعل كل حملة ننفّذها دقيقة ومؤثرة.</p>
+                        </div>
+                    </div>
+                    <div class="pillar">
+                        <span class="p-num">٠٢</span>
+                        <div>
+                            <h3 class="p-ttl">تخصص لا تعميم</h3>
+                            <p class="p-txt">نعمل في القطاع العقاري حصراً. ليس لدينا خدمات للمطاعم أو الأزياء — كل طاقتنا وأدواتنا وخبراتنا موجّهة لخدمة عملاء العقار فقط.</p>
+                        </div>
+                    </div>
+                    <div class="pillar">
+                        <span class="p-num">٠٣</span>
+                        <div>
+                            <h3 class="p-ttl">تكامل الخدمات تحت سقف واحد</h3>
+                            <p class="p-txt">من أولى خطوط الهوية البصرية إلى آخر لوحة إعلانية خارجية — نتولى كل شيء. عميلنا لا يحتاج إلى تنسيق بين جهات متعددة.</p>
+                        </div>
+                    </div>
+                    <div class="pillar">
+                        <span class="p-num">٠٤</span>
+                        <div>
+                            <h3 class="p-ttl">التنفيذ بمستوى الطموح</h3>
+                            <p class="p-txt">الأفكار كثيرة، لكن التنفيذ المتقن هو الأصعب. قائدنا التنفيذي يضمن أن كل مخرج يخرج بجودة لا تقبل المساومة — في الوقت المحدد وبالتأثير المطلوب.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rv d2">
+                <div class="metrics">
+                    <p class="eyebrow" style="margin-bottom:2rem">مقاييس نؤمن بها</p>
+                    <div class="m-grid">
+                        <div class="m-item">
+                            <div class="m-num">١٠٠٪</div>
+                            <div class="m-lbl">تركيز على القطاع العقاري</div>
+                        </div>
+                        <div class="m-item">
+                            <div class="m-num">٣٦٠°</div>
+                            <div class="m-lbl">تغطية تسويقية شاملة</div>
+                        </div>
+                        <div class="m-item">
+                            <div class="m-num">B2B</div>
+                            <div class="m-lbl">متخصصون في الأعمال</div>
+                        </div>
+                        <div class="m-item">
+                            <div class="m-num">∞</div>
+                            <div class="m-lbl">إمكانية التخصيص</div>
+                        </div>
+                    </div>
+                    <p class="m-note">
+                        عميلنا المثالي هو من يملك المال ويفتقر إلى الأداة التسويقية. نحن تلك الأداة — بحرفية لا مساومة فيها.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CLIENTS ════════════════════════════════ -->
+<section id="clients" class="section" style="background:var(--bg-1);position:relative;overflow:hidden">
+    <div class="grid-bg-sm"></div>
+    <div class="wrap" style="position:relative;z-index:1">
+        <div class="rv" style="margin-bottom:4rem">
+            <p class="eyebrow">عملاؤنا</p>
+            <div class="gold-bar"></div>
+            <h2 class="disp-lg">من نخدمهم<br><span class="gold-txt">بامتياز</span></h2>
+        </div>
+
+        <div class="clients-grid">
+            <div class="cl-card rv">
+                <div class="cl-ico">🏗️</div>
+                <div>
+                    <h3 class="cl-ttl">المطوّرون العقاريون</h3>
+                    <p class="cl-desc">شركات التطوير العقاري من القطاع الخاص — صغاراً وكباراً — الذين يمتلكون مشاريع ذات قيمة ويحتاجون إلى حضور تسويقي يوازي طموحاتهم ومشاريعهم.</p>
+                    <span class="cl-tag">أولوية قصوى</span>
+                </div>
+            </div>
+
+            <div class="cl-card rv d1">
+                <div class="cl-ico">🏛️</div>
+                <div>
+                    <h3 class="cl-ttl">الجهات الحكومية والمشاريع الوطنية</h3>
+                    <p class="cl-desc">المؤسسات والهيئات الحكومية التي تمتلك مشاريع عملاقة وتحتاج إلى شريك تسويقي يفهم لغة المصداقية والاحترافية المؤسسية.</p>
+                    <span class="cl-tag">B2G</span>
+                </div>
+            </div>
+
+            <div class="cl-card rv">
+                <div class="cl-ico">🤝</div>
+                <div>
+                    <h3 class="cl-ttl">مكاتب الوساطة والتسويق العقاري</h3>
+                    <p class="cl-desc">الوسطاء والمسوّقون العقاريون الذين يحتاجون إلى حضور رقمي قوي يبني ثقتهم المهنية ويجذب العملاء الجادين إليهم.</p>
+                    <span class="cl-tag">التركيز الرئيسي</span>
+                </div>
+            </div>
+
+            <div class="cl-card rv d1">
+                <div class="cl-ico">💼</div>
+                <div>
+                    <h3 class="cl-ttl">المستثمرون الأفراد</h3>
+                    <p class="cl-desc">أصحاب رؤوس الأموال الذين يمتلكون أصولاً عقارية ومحافظ استثمارية ويرغبون في التسويق لها بصورة تعكس قيمتها الحقيقية.</p>
+                    <span class="cl-tag">القيمة العالية</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ METHODOLOGY ════════════════════════════ -->
+<section id="method" class="section">
+    <div class="wrap">
+        <div class="rv" style="text-align:center;margin-bottom:5rem">
+            <p class="eyebrow">منهجيتنا</p>
+            <div class="gold-bar" style="margin:1.25rem auto"></div>
+            <h2 class="disp-lg">كيف نعمل معك<br><span class="gold-txt">من اليوم الأول</span></h2>
+        </div>
+
+        <div class="steps rv">
+            <div class="step">
+                <div class="step-n">١</div>
+                <h3 class="step-ttl">الاكتشاف والتشخيص</h3>
+                <p class="step-desc">نبدأ بفهم عميق لوضعك الحالي، أهدافك، جمهورك المستهدف، ومنافسيك في السوق السعودي.</p>
+            </div>
+            <div class="step">
+                <div class="step-n">٢</div>
+                <h3 class="step-ttl">الاستراتيجية والتخطيط</h3>
+                <p class="step-desc">نبني خارطة طريق تسويقية واضحة، مع تحديد الأولويات والأدوات والأساليب المناسبة لك.</p>
+            </div>
+            <div class="step">
+                <div class="step-n">٣</div>
+                <h3 class="step-ttl">التنفيذ والإبداع</h3>
+                <p class="step-desc">ننفّذ بدقة واحترافية — من أولى التصاميم إلى آخر إعلان — بمعايير جودة لا مساومة فيها.</p>
+            </div>
+            <div class="step">
+                <div class="step-n">٤</div>
+                <h3 class="step-ttl">القياس والتطوير المستمر</h3>
+                <p class="step-desc">نتابع الأداء، نحلّل النتائج، ونحسّن باستمرار لضمان أعلى عائد على استثمارك التسويقي.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CONTACT ════════════════════════════════ -->
+<section id="contact" class="section" style="background:var(--bg-1)">
+    <div class="wrap">
+        <div class="rv" style="margin-bottom:4.5rem">
+            <p class="eyebrow">تواصل معنا</p>
+            <div class="gold-bar"></div>
+            <h2 class="disp-lg">ابدأ رحلتك<br><span class="gold-txt">معنا الآن</span></h2>
+            <p style="color:var(--txt-2);max-width:500px;margin-top:1rem;font-size:.93rem;line-height:1.85">
+                لا تحتاج إلى أن تكون خبيراً في التسويق. تحتاج فقط إلى أن تكون جاهزاً للنمو — نحن نتولى الباقي.
+            </p>
+        </div>
+
+        <div class="contact-grid">
+            <!-- Info -->
+            <div class="rv">
+                <div class="ci-item">
+                    <div class="ci-ico">📞</div>
+                    <div>
+                        <span class="ci-lbl">الهاتف وواتساب</span>
+                        <div class="ci-val ltr">+966 56 772 1634</div>
+                    </div>
+                </div>
+
+                <div class="ci-item">
+                    <div class="ci-ico">📍</div>
+                    <div>
+                        <span class="ci-lbl">نطاق الخدمة</span>
+                        <div class="ci-val">المملكة العربية السعودية</div>
+                    </div>
+                </div>
+
+                <div class="ci-item">
+                    <div class="ci-ico">🏷️</div>
+                    <div>
+                        <span class="ci-lbl">هويتنا على المنصات</span>
+                        <div class="ci-val ltr">@agaweedRM</div>
+                    </div>
+                </div>
+
+                <div class="socials">
+                    <!-- Instagram -->
+                    <a href="#" class="soc-a" title="إنستقرام" aria-label="إنستقرام">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <!-- X / Twitter -->
+                    <a href="#" class="soc-a" title="تويتر X" aria-label="تويتر X">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <!-- LinkedIn -->
+                    <a href="#" class="soc-a" title="لينكدإن" aria-label="لينكدإن">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                            <rect x="2" y="9" width="4" height="12"/>
+                            <circle cx="4" cy="4" r="2"/>
+                        </svg>
+                    </a>
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/966567721634" class="soc-a" title="واتساب" aria-label="واتساب">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                    </a>
+                    <!-- Snapchat -->
+                    <a href="#" class="soc-a" title="سناب شات" aria-label="سناب شات">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3c-4.8 0-8 3.2-8 7.5 0 1.8.2 3 .7 4.2-.4.2-.7.5-.7.8 0 .5.4.9 1.1 1.1-.1.3-.3.6-.3.8 0 1.2 1.3 2.2 4.4 2.5.2.4.7.7 1.4.9l.4.2.4-.2c.7-.2 1.2-.5 1.4-.9 3.1-.3 4.4-1.3 4.4-2.5 0-.3-.1-.5-.3-.8.7-.2 1.1-.6 1.1-1.1 0-.3-.3-.6-.7-.8.5-1.2.7-2.4.7-4.2C20 6.2 16.8 3 12 3z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="rv d2 cform">
+                <h3>أرسل لنا رسالة</h3>
+
+                <div class="frow">
+                    <div class="fg">
+                        <label class="fl">الاسم الكريم</label>
+                        <input type="text" class="fi" placeholder="اسمك الكامل">
+                    </div>
+                    <div class="fg">
+                        <label class="fl">رقم التواصل</label>
+                        <input type="tel" class="fi" placeholder="+966 5X XXX XXXX" dir="ltr" style="text-align:right">
+                    </div>
+                </div>
+
+                <div class="fg">
+                    <label class="fl">طبيعة عملك</label>
+                    <select class="fs">
+                        <option value="" disabled selected>اختر القطاع</option>
+                        <option>مطوّر عقاري</option>
+                        <option>مكتب وساطة عقارية</option>
+                        <option>جهة حكومية أو شبه حكومية</option>
+                        <option>مستثمر فردي</option>
+                        <option>أخرى</option>
+                    </select>
+                </div>
+
+                <div class="fg">
+                    <label class="fl">الخدمة المطلوبة</label>
+                    <select class="fs">
+                        <option value="" disabled selected>ما الذي تحتاجه؟</option>
+                        <option>باقة الحضور الرقمي</option>
+                        <option>باقة الهوية المتكاملة</option>
+                        <option>باقة التمدد والنمو</option>
+                        <option>خدمات مخصصة</option>
+                        <option>استشارة أولية مجانية</option>
+                    </select>
+                </div>
+
+                <div class="fg">
+                    <label class="fl">تفاصيل إضافية</label>
+                    <textarea class="ft" placeholder="أخبرنا عن مشروعك أو استفسارك..."></textarea>
+                </div>
+
+                <button class="btn-g" style="width:100%;justify-content:center;padding:1rem;clip-path:none"
+                    onclick="submitForm()">
+                    إرسال الطلب &nbsp;←
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FOOTER ═════════════════════════════════ -->
+<footer id="footer">
+    <div class="wrap">
+        <div class="foot-grid">
+            <div class="foot-brand">
+                <span class="logo-wordmark" style="font-size:1.4rem;display:block;margin-bottom:.25rem">
+                    أجاويد <em style="color:var(--gold);font-style:normal">RM</em>
+                </span>
+                <p>وكالة تسويق عقاري متخصصة في المملكة العربية السعودية. نفهم العقار من الداخل، ونسوّقه للسوق بامتياز لا منازع فيه.</p>
+                <div class="socials" style="margin-top:1.5rem">
+                    <a href="#" class="soc-a">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="soc-a">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/966567721634" class="soc-a">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="foot-col">
+                <h4>خدماتنا</h4>
+                <ul>
+                    <li><a href="#services">إدارة السوشيل ميديا</a></li>
+                    <li><a href="#services">بناء الهوية البصرية</a></li>
+                    <li><a href="#services">المواقع الإلكترونية</a></li>
+                    <li><a href="#services">الإعلانات الرقمية</a></li>
+                    <li><a href="#services">التسويق الخارجي</a></li>
+                    <li><a href="#services">تنظيم الفعاليات</a></li>
+                </ul>
+            </div>
+
+            <div class="foot-col">
+                <h4>الوكالة</h4>
+                <ul>
+                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#why">لماذا أجاويد</a></li>
+                    <li><a href="#clients">عملاؤنا</a></li>
+                    <li><a href="#method">منهجيتنا</a></li>
+                    <li><a href="#contact">تواصل معنا</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="foot-bottom">
+            <p>© ٢٠٢٥ أجاويد. جميع الحقوق محفوظة.</p>
+            <span class="foot-handle">@agaweedRM</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ── Navbar scroll ────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+    nav.classList.toggle('stuck', window.scrollY > 60);
+});
+
+/* ── Mobile nav ───────────────────────────── */
+function openMob(){ document.getElementById('mob-nav').classList.add('open') }
+function closeMob(){ document.getElementById('mob-nav').classList.remove('open') }
+
+/* ── Tabs ─────────────────────────────────── */
+function switchTab(id, btn){
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+    document.getElementById('tab-'+id).classList.add('on');
+    btn.classList.add('on');
+    // re-trigger reveal for newly visible items
+    document.querySelectorAll('#tab-'+id+' .rv').forEach(el => {
+        el.classList.remove('vis');
+        setTimeout(() => el.classList.add('vis'), 50);
+    });
 }
 
-function VisionSlide({ slide }) {
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: "0.18em", color: "#C9A84C", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{slide.tag}</div>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 800, color: "#1A1A2E", marginBottom: 4 }}>{slide.title}</h2>
-      </div>
-      <div style={{ background: "#1A1A2E", borderRadius: 12, padding: "1.8rem 2rem" }}>
-        <p style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", color: "rgba(240,237,228,0.88)", lineHeight: 1.9, fontStyle: "italic" }}>"{slide.quote}"</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))", gap: 8 }}>
-        {slide.evolution.map((e, i) => (
-          <div key={i} style={{ background: e.bg, border: `0.5px solid ${e.color}25`, borderRadius: 10, padding: "1rem 1.2rem" }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${e.color}15`, border: `1px solid ${e.color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: e.color, marginBottom: 8 }}>{e.n}</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 3 }}>{e.title}</div>
-            <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.6 }}>{e.desc}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {slide.outcomes.map((o, i) => (
-          <div key={i} style={{ background: "#F8F6F0", border: "0.5px solid rgba(201,168,76,0.25)", borderRadius: 10, padding: "1rem 1.2rem" }}>
-            <div style={{ fontSize: 20, marginBottom: 6 }}>{o.icon}</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A2E", marginBottom: 4 }}>{o.title}</div>
-            <div style={{ fontSize: 11, color: "#4A4A6A", lineHeight: 1.65 }}>{o.desc}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.35)", borderRadius: 10, padding: "1rem 1.4rem" }}>
-        <p style={{ fontSize: 13, color: "#8B6914", lineHeight: 1.8, fontWeight: 500 }}>{slide.finalVerdict}</p>
-      </div>
-    </div>
-  );
+/* ── Scroll reveal ────────────────────────── */
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+/* ── Smooth scroll ────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const t = document.querySelector(a.getAttribute('href'));
+        if(t){ e.preventDefault(); window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior:'smooth' }) }
+    });
+});
+
+/* ── Form submit ──────────────────────────── */
+function submitForm(){
+    const btn = event.currentTarget || document.querySelector('.cform .btn-g');
+    btn.textContent = '✓ تم الإرسال — سنتواصل معك قريباً';
+    btn.style.background = 'linear-gradient(135deg,#4CAF50,#2E7D32)';
+    btn.style.clipPath = 'none';
+    setTimeout(() => {
+        btn.textContent = 'إرسال الطلب  ←';
+        btn.style.background = '';
+    }, 4000);
 }
-
-const SLIDE_RENDERERS = {
-  cover: CoverSlide,
-  exec: ExecSlide,
-  maturity: MaturitySlide,
-  rootcause: RootCauseSlide,
-  swot: SwotSlide,
-  friction: FrictionSlide,
-  framework: FrameworkSlide,
-  opportunities: OpportunitiesSlide,
-  roadmap: RoadmapSlide,
-  kpis: KpisSlide,
-  proposals: ProposalsSlide,
-  vision: VisionSlide,
-};
-
-// ─── OVERVIEW MAP ─────────────────────────────────────────────────────────────
-function OverviewMap({ current, onSelect, onClose }) {
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(10,10,20,0.92)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }} onClick={onClose} dir="rtl">
-      <div style={{ background: "#F8F6F0", borderRadius: 16, padding: 32, maxWidth: 900, width: "100%", maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h3 style={{ fontSize: 20, fontWeight: 800, color: "#1A1A2E" }}>خريطة العرض التقديمي</h3>
-          <button onClick={onClose} style={{ background: "none", border: "0.5px solid rgba(0,0,0,0.2)", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 12, color: "#4A4A6A" }}>إغلاق</button>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 8 }}>
-          {SLIDES.map((s, i) => (
-            <button key={s.id} onClick={() => { onSelect(i); onClose(); }} style={{
-              background: i === current ? "#1A1A2E" : "#fff",
-              border: `0.5px solid ${i === current ? "#1A1A2E" : "rgba(201,168,76,0.3)"}`,
-              borderRadius: 10, padding: "0.9rem 1rem", cursor: "pointer", textAlign: "right",
-              transition: "all 0.15s"
-            }}>
-              <div style={{ fontSize: 10, color: i === current ? "#C9A84C" : "#8A8AA0", marginBottom: 4 }}>شريحة {i + 1}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: i === current ? "#F8F6F0" : "#1A1A2E", lineHeight: 1.4 }}>{s.tag?.split("·")[1]?.trim() || s.tag}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
-function Sidebar({ current, onSelect, visible }) {
-  return (
-    <div style={{
-      position: "fixed", top: 0, right: 0, height: "100vh", width: 220,
-      background: "#1A1A2E", borderLeft: "0.5px solid rgba(201,168,76,0.15)",
-      zIndex: 50, transform: visible ? "translateX(0)" : "translateX(100%)",
-      transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
-      display: "flex", flexDirection: "column", padding: "24px 0", overflowY: "auto"
-    }} dir="rtl">
-      <div style={{ padding: "0 16px 16px", borderBottom: "0.5px solid rgba(201,168,76,0.15)", marginBottom: 8 }}>
-        <div style={{ fontSize: 10, letterSpacing: "0.15em", color: "#C9A84C", textTransform: "uppercase", fontWeight: 600 }}>قائمة الشرائح</div>
-      </div>
-      {SLIDES.map((s, i) => (
-        <button key={s.id} onClick={() => onSelect(i)} style={{
-          background: i === current ? "rgba(201,168,76,0.12)" : "none",
-          border: "none", borderRight: `2px solid ${i === current ? "#C9A84C" : "transparent"}`,
-          padding: "10px 16px", cursor: "pointer", textAlign: "right", width: "100%",
-          transition: "all 0.15s"
-        }}>
-          <div style={{ fontSize: 9, color: i === current ? "#C9A84C" : "#4A4A6A", marginBottom: 2 }}>{String(i + 1).padStart(2, "0")}</div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: i === current ? "#F8F6F0" : "#8A8AA0", lineHeight: 1.3 }}>{s.tag?.split("·")[1]?.trim() || s.tag}</div>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ─── MAIN APP ────────────────────────────────────────────────────────────────
-export default function PitchDeck() {
-  const [current, setCurrent] = useState(0);
-  const [prev, setPrev] = useState(-1);
-  const [direction, setDirection] = useState(1);
-  const [animating, setAnimating] = useState(false);
-  const [showOverview, setShowOverview] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const total = SLIDES.length;
-
-  const goTo = useCallback((idx) => {
-    if (animating || idx === current || idx < 0 || idx >= total) return;
-    setDirection(idx > current ? 1 : -1);
-    setPrev(current);
-    setAnimating(true);
-    setCurrent(idx);
-    setTimeout(() => { setAnimating(false); setPrev(-1); }, 420);
-  }, [animating, current, total]);
-
-  const goNext = useCallback(() => goTo(current + 1), [goTo, current]);
-  const goPrev = useCallback(() => goTo(current - 1), [goTo, current]);
-  useKeyboard(goPrev, goNext);
-
-  const slide = SLIDES[current];
-  const SlideComp = SLIDE_RENDERERS[slide.type];
-  const progress = ((current + 1) / total) * 100;
-
-  return (
-    <div style={{ minHeight: "100vh", background: "#FAF8F3", fontFamily: "'Noto Sans Arabic', 'Noto Naskh Arabic', 'Segoe UI', sans-serif", direction: "rtl", position: "relative", overflow: "hidden" }}>
-      {/* Subtle background pattern */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 1px 1px, rgba(201,168,76,0.04) 1px, transparent 0)", backgroundSize: "32px 32px", pointerEvents: "none", zIndex: 0 }} />
-
-      {/* Progress bar */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: showSidebar ? 220 : 0, height: 2, background: "rgba(201,168,76,0.15)", zIndex: 100 }}>
-        <div style={{ height: "100%", background: "#C9A84C", width: `${progress}%`, transition: "width 0.4s cubic-bezier(0.4,0,0.2,1)" }} />
-      </div>
-
-      {/* Top bar */}
-      <div style={{ position: "fixed", top: 0, left: showSidebar ? 220 : 0, right: 0, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px 0 24px", background: "rgba(250,248,243,0.9)", backdropFilter: "blur(8px)", zIndex: 90, borderBottom: "0.5px solid rgba(201,168,76,0.15)", transition: "left 0.3s" }} dir="rtl">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setShowOverview(true)} style={{ fontSize: 11, fontWeight: 600, color: "#8A8AA0", background: "none", border: "0.5px solid rgba(0,0,0,0.12)", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>نظرة عامة</button>
-          <span style={{ fontSize: 11, color: "#8A8AA0" }}>{slide.tag}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 12, color: "#4A4A6A", fontWeight: 600 }}>{current + 1} / {total}</span>
-          <div style={{ display: "flex", gap: 2 }}>
-            {SLIDES.map((_, i) => (
-              <button key={i} onClick={() => goTo(i)} style={{ width: i === current ? 16 : 6, height: 6, borderRadius: 3, background: i === current ? "#C9A84C" : "rgba(201,168,76,0.25)", border: "none", cursor: "pointer", transition: "all 0.2s", padding: 0 }} />
-            ))}
-          </div>
-          <button onClick={() => setShowSidebar(v => !v)} style={{ fontSize: 11, color: "#8A8AA0", background: "none", border: "0.5px solid rgba(0,0,0,0.12)", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>
-            {showSidebar ? "إخفاء" : "القائمة"}
-          </button>
-        </div>
-      </div>
-
-      {/* Main slide area */}
-      <div style={{ position: "fixed", top: 52, left: showSidebar ? 220 : 0, right: 0, bottom: 64, display: "flex", alignItems: "center", justifyContent: "center", transition: "left 0.3s" }}>
-        <div style={{ width: "100%", maxWidth: 1000, padding: "0 40px", height: "100%", overflow: "hidden", position: "relative" }}>
-          <div key={current} style={{
-            height: "100%",
-            animation: `slideIn 0.4s cubic-bezier(0.4,0,0.2,1) both`,
-          }}>
-            <style>{`
-              @keyframes slideIn {
-                from { opacity: 0; transform: translateX(${direction > 0 ? "-40px" : "40px"}); }
-                to { opacity: 1; transform: translateX(0); }
-              }
-            `}</style>
-            {SlideComp && <SlideComp slide={slide} />}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom navigation */}
-      <div style={{ position: "fixed", bottom: 0, left: showSidebar ? 220 : 0, right: 0, height: 64, display: "flex", alignItems: "center", justifyContent: "center", gap: 16, background: "rgba(250,248,243,0.9)", backdropFilter: "blur(8px)", borderTop: "0.5px solid rgba(201,168,76,0.15)", zIndex: 90, transition: "left 0.3s" }}>
-        <button onClick={goPrev} disabled={current === 0} style={{
-          display: "flex", alignItems: "center", gap: 6, padding: "8px 20px",
-          background: current === 0 ? "transparent" : "#1A1A2E",
-          color: current === 0 ? "#C4BFB5" : "#FAF8F3",
-          border: `0.5px solid ${current === 0 ? "rgba(0,0,0,0.1)" : "#1A1A2E"}`,
-          borderRadius: 8, cursor: current === 0 ? "default" : "pointer",
-          fontSize: 12, fontWeight: 600, fontFamily: "inherit", transition: "all 0.2s"
-        }}>
-          → السابق
-        </button>
-        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: "#8A8AA0" }}>شريحة</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: "#1A1A2E", minWidth: 24, textAlign: "center" }}>{current + 1}</span>
-          <span style={{ fontSize: 11, color: "#8A8AA0" }}>من {total}</span>
-        </div>
-        <button onClick={goNext} disabled={current === total - 1} style={{
-          display: "flex", alignItems: "center", gap: 6, padding: "8px 20px",
-          background: current === total - 1 ? "transparent" : "#C9A84C",
-          color: current === total - 1 ? "#C4BFB5" : "#1A1A2E",
-          border: `0.5px solid ${current === total - 1 ? "rgba(0,0,0,0.1)" : "#C9A84C"}`,
-          borderRadius: 8, cursor: current === total - 1 ? "default" : "pointer",
-          fontSize: 12, fontWeight: 700, fontFamily: "inherit", transition: "all 0.2s"
-        }}>
-          التالي ←
-        </button>
-      </div>
-
-      {/* Sidebar */}
-      <Sidebar current={current} onSelect={goTo} visible={showSidebar} />
-
-      {/* Overview */}
-      {showOverview && <OverviewMap current={current} onSelect={goTo} onClose={() => setShowOverview(false)} />}
-
-      {/* Keyboard hint */}
-      <div style={{ position: "fixed", bottom: 72, left: "50%", transform: "translateX(-50%)", fontSize: 10, color: "rgba(0,0,0,0.25)", pointerEvents: "none", whiteSpace: "nowrap" }}>
-        ← → للتنقل بالكيبورد
-      </div>
-    </div>
-  );
-}
+</script>
+</body>
+</html>
